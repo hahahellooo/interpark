@@ -1,0 +1,17 @@
+[project]
+name = "interpark"
+version = "0.1.2"
+description = "Default template for PDM package"
+authors = [
+    {name = "hahahellooo", email = "hahahello777@gmail.com"},
+]
+dependencies = [
+    "selenium>=4.26.1",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
