@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from open_page_link import get_open_page_link
+from open_page_link import get_open_page_url
 
 def extract_html():
     # 브라우저 꺼짐 방지 옵션
@@ -15,8 +15,10 @@ def extract_html():
     driver.set_window_size(1900, 1000)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_link(53378,3)
+    open_page_lists = get_open_page_url(53378,3)
 
+    # 저장할 때 open_page_url도 상단에 저장하도록 설정
+    
     try:
         for page in open_page_lists:
             print(f"{page} 접속 중")
@@ -39,7 +41,7 @@ def extract_html():
         return inner_html
 
     except Exception as e:
-        print(f"에러 발생: {e}")
+        print(f"{page} 페이지 접속 에러: {e}")
 
     finally:
         driver.quit()

@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-def get_open_page_link(base_num, max_pages):
+def get_open_page_url(base_num, max_pages):
     # 브라우저 옵션 설정
     chrome_options = Options()
     chrome_options.add_experimental_option("detach", True)
