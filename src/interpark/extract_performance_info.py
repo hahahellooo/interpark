@@ -32,19 +32,59 @@ def performance_info():
             print(f"{num} 페이지 크롤링 중")
             driver.get(url)
 
-            # 페이지 로드 대기
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "introduce"))
-            )
-
+           
             # 딕셔너리로 데이터 초기화
             page_data = {
+                "open_page_url": url,
+                "poster_url": None,
                 "page_number": num,
-                "link":url,
+                "link":None,
                 "performance_info": None,
                 "info_data": {},
                 "artists": []
             }
+
+            try:
+                # 이미지 태그가 로드될 때까지 대기
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "detail_top"))
+                )
+
+                # 이미지 태그 찾기
+                img_info = driver.find_element(By.CLASS_NAME, "info")
+                img_element = img_info.find_element(By.TAG_NAME, 'img')
+                page_data["poster_url"] = img_element.get_attribute("src")  # `src` 속성 추출
+                
+            except Exception as e:
+                print(f"poster url이 없습니다: {e}")
+
+            try:
+            
+                # 페이지 로드 대기
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "btn"))
+                )
+
+                # `btn` 클래스 내의 모든 링크 수집
+                btn_element = driver.find_element(By.CLASS_NAME, "btn")
+                links = btn_element.find_elements(By.TAG_NAME, "a")
+
+                for link in links:
+                    href = link.get_attribute("href")
+                    if href:
+                        if 'http' in href:  # 유효한 URL인지 확인
+                            page_data["link"] = link.get_attribute("href")
+                    else:
+                        print("link가 없습니다")
+                        
+            except Exception as e:
+                print(f"link가 없습니다{e}")
+            
+
+            # 페이지 로드 대기
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "introduce"))
+            )
 
             # introduce 클래스 내부 데이터 출력
             try:
@@ -106,4 +146,6 @@ def performance_info():
     # 수집한 데이터 출력
     for page in data_list:
         print(page)
+
+performance_info()
 
