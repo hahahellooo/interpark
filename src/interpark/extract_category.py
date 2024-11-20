@@ -17,6 +17,9 @@ driver.set_window_size(1900, 1000)
 # 기본 페이지 URL
 base_url = "https://ticket.interpark.com/webzine/paper/TPNoticeList.asp?tid1=in_scroll&tid2=ticketopen&tid3=board_main&tid4=board_main"
 
+# 데이터 저장을 위한 리스트 초기화
+data_list = []
+
 try:
     # 기본 페이지 접속
     driver.get(base_url)
@@ -25,9 +28,9 @@ try:
     iframe = driver.find_element(By.TAG_NAME, 'iframe')
     driver.switch_to.frame(iframe)
 
-    # 페이지 반복 (예: 1~200페이지)
-    for page in range(1, 5):  # 페이지 수는 실제 범위에 맞게 설정
-        print(f"현재 페이지: {page}")
+    # 페이지 반복 
+    for page in range(1, 3):  
+        print(f"{page} 페이지 크롤링 중")
 
         # tbody 접근
         tbody = driver.find_element(By.TAG_NAME, "tbody")
@@ -44,12 +47,19 @@ try:
                 subject_text = subject.find_element(By.TAG_NAME, "a").text
                 subject_link = subject.find_element(By.TAG_NAME, "a").get_attribute("href")
 
+                # 날짜(date) 추출
+                open_date = row.find_element(By.CLASS_NAME, "date").text
 
-                # 데이터 출력
-                print(f"카테고리: {category}")
-                print(f"제목: {subject_text}")
-                print(f"URL: {subject_link}")
-                print("-" * 50)
+                # 딕셔너리 형태로 데이터 저장
+                data = {
+                    "category": category,
+                    "title": subject_text,
+                    "link": subject_link,
+                    "open_ticket_date": open_date
+                }
+
+                # 리스트에 데이터 추가
+                data_list.append(data)
 
             except Exception as inner_e:
                 print(f"데이터 추출 중 오류 발생: {inner_e}")
@@ -66,3 +76,12 @@ try:
 
 except Exception as e:
     print(f"오류 발생: {e}")
+
+finally:
+    # 드라이버 종료
+    driver.quit()
+
+# 수집한 데이터 출력
+for item in data_list:
+    print(item)
+
