@@ -18,7 +18,7 @@ def transform_raw():
     # 브라우저 사이즈 설정
     driver.set_window_size(1900, 1000)
 
-    open_page_lists = get_open_page_url(53563,3)
+    open_page_lists = get_open_page_url(53550,15)
 
     # 데이터를 저장할 리스트 초기화
     data_list = []
@@ -68,7 +68,7 @@ def transform_raw():
                     if "선예매" in li.text:
                         ticket_data["pre_open_date"] = li.text.split("\n")[1]
                         break  # 원하는 정보를 찾으면 반복문 종료
-                print(f"title/pre_open_date/open_date/poster_url 추출 완료: {ticket_data['poster_url']}")
+                print("title/pre_open_date/open_date/poster_url 추출 완료")
             
             except Exception as e:
                 print(f"poster_url이 없습니다")
@@ -94,7 +94,40 @@ def transform_raw():
                 print(f"link가 없습니다")
                 
             # introduce 클래스 내부 데이터 출력 - casting/description
-            try:      
+            try:
+                introduce_element = driver.find_element(By.CLASS_NAME,"introduce")
+                detail_element = introduce_element.find_element(By.CLASS_NAME, "data")
+                detail_text = detail_element.find_element(By.TAG_NAME,"p").text
+                lines = detail_text.strip().split("\n")  # 줄 단위로 나누기
+                print(lines)
+
+                for line in lines:
+                    line = line.replace(" ", "").strip()  # 모든 공백 제거
+                    if "뮤지컬" in line or "연극" in line:
+                        ticket_data["category"] = "뮤지컬/연극"
+                    elif "공연기간" in line or "공연일시" in line:  # 수정된 조건
+                        date = line.split(":")[1].split("~")  # ':' 이후를 가져오고 '~' 기준으로 분리
+                        ticket_data["start_date"] = date[0].strip()
+                        ticket_data["end_date"] = date[1].strip()
+                    elif "공연시간" in line:
+                        ticket_data["show_time"] = line.split(":")[1].strip()
+                    elif "공연장" in line or "관람장소" in line or "공연장소" in line:  # 수정된 조건
+                        ticket_data["location"] = line.split(":")[1].strip()
+                    elif "러닝타임" in line:
+                        ticket_data["running_time"] = line.split(":")[1].strip()
+                    elif "관람연령" in line or "관람등급" in line:  # 수정된 조건
+                        ticket_data["rating"] = line.split(":")[1].strip()
+                    elif "티켓가격" in line or "가격" in line or "티켓가" in line:  # 수정된 조건
+                        ticket_data["price"] = line.split(":")[1].strip()
+                                            
+                    else:
+                        print("실패 !!!!!!!!!!!!!!!!!!")
+                        break
+            except Exception:
+                print("공연정보가 없습니다")
+            
+            try:
+
                 info1_element = driver.find_element(By.CLASS_NAME, "info1")
                 description_element = info1_element.find_element(By.CLASS_NAME, "data")
                 ticket_data['description'] = description_element.text.strip()
@@ -106,6 +139,57 @@ def transform_raw():
             except Exception:
                 print("casting/description가 없습니다")
 
+            # if ticket_data["hosts"]["link"]:
+            # #     for host_link in ticket_data["hosts"]["link"]:
+            #     try:
+            #         print(f"{ticket_data['hosts']['link']} 페이지로 이동 중...")
+                
+            #         window_handles = driver.window_handles 
+            #         driver.switch_to.window(window_handles[-1])
+            #         print("티켓 예매 사이트로 전환 완료")
+
+            #         # 새로운 페이지에서 추가 정보 추출
+            #         try:
+            #             # info 클래스 대기
+            #             WebDriverWait(driver, 10).until(
+            #                 EC.presence_of_element_located((By.CLASS_NAME, "info"))
+            #             )
+            #             li_elements = driver.find_elements(By.CLASS_NAME, "infoItem")
+            #             print(li_elements.text)
+
+            #             # li 내부의 a 태그에서 텍스트 추출
+            #             for li in li_elements:
+            #                 try:
+            #                     a_element = li.find_element(By.CLASS_NAME, "infoBtn")
+            #                     text = a_element.text.strip()  # a 태그의 텍스트 추출
+            #                     print(f"추출된 텍스트: {text}")
+            #                 except Exception as e:
+            #                     print(f"infoBtn에서 텍스트를 가져오는 중 오류 발생: {e}")
+
+                            
+
+            #                 # # 특정 조건 ("장소")에 해당하는 텍스트 추출
+            #                 # if "장소" in item_text:
+            #                 #     print(f"추출된 장소: {item_text.split(':')[-1].strip()}")  # ":" 기준으로 분리 후 오른쪽 값을 가져옴
+
+            #         except Exception as e:
+            #             print("정보 읽기 실패")
+                    
+                            
+                    #     info_element = driver.find_element(By.CLASS_NAME, "info")
+                    #     ticket_data['location'] = info_element.find_element(By.CLASS_NAME, "infoBtn").text
+                    #     ticket_data['start_date'] = info_element.find_element(By.CLASS_NAME, "infoText")[0]
+                    #     ticket_data['end_date'] = info_element.find_element(By.CLASS_NAME, "infoText")[1]
+                    #     ticket_data["new_info"] = new_info_element.text.strip()
+                    #     print("새로운 정보 추출 완료:")
+                    # except Exception as e:
+                    #     print(f"새로운 페이지에서 정보 추출 실패: {e}")
+
+            # except Exception as e:
+            #     print(f"새로운 페이지로 이동 중 오류 발생: {e}")
+            # else:
+            #     print("미오픈 티켓: link가 없습니다.")
+            #     continue
 
             data_list.append(ticket_data)
 

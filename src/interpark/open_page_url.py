@@ -16,18 +16,28 @@ def get_open_page_url(base_num, max_pages):
 
     # 결과 데이터 저장
     open_page_list = []
+   
 
     # base_num부터 시작해 max_pages 만큼 반복
     for num in range(base_num, base_num + max_pages):
         try:
             open_page_url = f'https://ticket.interpark.com/webzine/paper/TPNoticeView.asp?bbsno=34&pageno=233&stext=&no={num}&groupno={num}&seq=0&KindOfGoods=TICKET&Genre=&sort=WriteDate'
             driver.get(open_page_url)
-            open_page_list.append(open_page_url)
+            print(open_page_url)
+            status_code = driver.execute_script(
+                "return (window.performance.getEntries()[0] || {}).responseStart ? 200 : 404;"
+            )
+            if status_code == 200:
+                open_page_list.append(open_page_url)    
+            else:
+                print("오류 페이지 발견. 데이터를 추가하지 않습니다.")
+               
 
         except:
             print("open_page_url 접속 에러")
     print(open_page_list)        
     return open_page_list
+
 
 
            
