@@ -5,23 +5,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup  # HTML 포맷팅을 위한 라이브러리
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 
 def extract_container_html():
-    # Chrome 옵션 설정
+    """WebDriver 및 Chrome 옵션 설정"""
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # GUI 없이 실행
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    # Chromedriver 설치 및 WebDriver 초기화
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-    # Chromedriver 경로 설정
-    service = Service("/usr/local/bin/chromedriver")  # Chromedriver 경로 확인 필요
-
-    # WebDriver 실행
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-   
 
     try:
         page = "https://tickets.interpark.com/goods/24016386?"  # 대상 URL
