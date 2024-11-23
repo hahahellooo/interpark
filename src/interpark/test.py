@@ -28,7 +28,6 @@ def extract_container_html():
         WebDriverWait(driver, 20).until(
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
-        print("페이지 로드 완료")
 
         try:
             # id="container" 요소 대기
@@ -49,13 +48,12 @@ def extract_container_html():
             # 결과 출력
             print(formatted_html)
         except:
-            print("container를 찾지 못함")
-
+            print(f"{page} 접속 실패 ")
 
         # HTML 파일로 저장
-        with open("formatted_container_output.html", "w", encoding="utf-8") as file:
+        with open("formatted_container_output.txt", "w", encoding="utf-8") as file:
             file.write(formatted_html)
-            print("HTML 저장 완료: formatted_container_output.html")
+            print("txt 저장 완료: formatted_container_output.txt")
 
     except Exception as e:
         print(f"크롤링 중 에러 발생: {e}")
