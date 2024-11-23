@@ -22,7 +22,12 @@ def extract_container_html():
 
     # WebDriver 객체 생성
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    
+
+    save_dir = "./data"  # 원하는 경로로 설정
+    os.makedirs(save_dir, exist_ok=True)  # 경로가 없으면 생성
+
+    save_path = os.path.join(save_dir, "formatted_container_output.txt")  # 파일 전체 경로
+
 
     try:
         page = "https://tickets.interpark.com/goods/24016386?"  # 대상 URL
