@@ -8,16 +8,19 @@ import time
 
 
 def extract_container_html():
+    # Chrome 옵션 설정
     chrome_options = Options()
-    # GUI 모드에서 테스트 (headless 사용 시 주석 해제 가능)
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")  # GUI 없이 실행
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    # WebDriver 설정
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.set_window_size(1920, 1080)
+    # Chromedriver 경로 설정
+    service = Service("/usr/local/bin/chromedriver")  # Chromedriver 경로 확인 필요
+
+    # WebDriver 실행
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+   
 
     try:
         page = "https://tickets.interpark.com/goods/24016386?"  # 대상 URL
