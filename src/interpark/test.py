@@ -21,7 +21,7 @@ def extract_container_html():
     options.add_argument("--ignore-certificate-errors")
 
     # WebDriver 객체 생성
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
 
     try:
