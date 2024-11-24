@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup  # HTML 포맷팅을 위한 라이브러리
-#from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
 
@@ -21,9 +21,8 @@ def extract_container_html():
     options.add_argument("--ignore-ssl-errors=yes")
     options.add_argument("--ignore-certificate-errors")
 
-    driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=options)
     # WebDriver 객체 생성
-    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     save_dir = "./data"  # 원하는 경로로 설정
     os.makedirs(save_dir, exist_ok=True)  # 경로가 없으면 생성
