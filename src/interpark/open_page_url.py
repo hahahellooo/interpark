@@ -1,18 +1,25 @@
+import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 def get_open_page_url(base_num, max_pages):
-    # 브라우저 옵션 설정
-    chrome_options = Options()
-    chrome_options.add_experimental_option("detach", True)
+    
+    # ChromePtions 객체 생성
+    options = Options()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--headless")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--ignore-ssl-errors=yes")
+    options.add_argument("--ignore-certificate-errors")
 
-    # 드라이버 생성
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.set_window_size(1900, 1000)
+    # WebDriver 객체 생성
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 결과 데이터 저장
     open_page_list = []
