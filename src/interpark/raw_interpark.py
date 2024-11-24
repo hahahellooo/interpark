@@ -3,21 +3,26 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup 
-from open_page_url import get_open_page_url
+from selenium.webdriver.chrome.service import Service
+from bs4 import BeautifulSoup  # HTML 포맷팅을 위한 라이브러리
+from webdriver_manager.chrome import ChromeDriverManager
 import time
+import os
 
 
 def extract_html():
-    # 브라우저 꺼짐 방지 옵션
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # GUI 없이 실행
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    # chrome_options.add_argument("--disable-dev-shm-usage")
-    # 드라이버 생성
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.set_window_size(1900, 1000)
+    # ChromeOptions 객체 생성
+    options = Options()
+    # Headless 모드 활성화
+    options.add_argument("--no-sandbox")  # 추가한 옵션
+    options.add_argument("--headless")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")  # 추가한 옵션
+    options.add_argument("--ignore-ssl-errors=yes")
+    options.add_argument("--ignore-certificate-errors")
+
+    # WebDriver 객체 생성
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
     open_page_lists = get_open_page_url(53403, 1)
