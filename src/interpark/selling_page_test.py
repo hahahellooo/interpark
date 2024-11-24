@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from open_page_url import get_open_page_url
 
 def transform_raw():
@@ -260,7 +261,9 @@ def transform_raw():
     driver.quit()
 
     # 수집한 데이터 출력
+    print(ticket_data)
     return ticket_data
+    
 transform_raw()
 
 
