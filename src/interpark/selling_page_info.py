@@ -19,7 +19,7 @@ def transform_raw():
     # 브라우저 사이즈 설정
     driver.set_window_size(1900, 1000)
 
-    open_page_lists = get_open_page_url(53278,3)
+    open_page_lists = get_open_page_url(53479,3)
 
     # 데이터를 저장할 리스트 초기화
     data_list = []
@@ -150,9 +150,14 @@ def transform_raw():
 
                     # show_time 추출
                     try:
-                        contents = driver.find_element(By.CLASS_NAME, "contents")
-                        # content_casting= contents.find_element(By.CSS_SELECTOR, ".content.casting")
-                        # # class="content" 요소 찾기
+                        contents_selector = "#content"  # CSS Selector: id로 선택
+                        WebDriverWait(driver, 20).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, contents_selector))
+                            )
+                        contents = driver.find_element(By.CSS_SELECTOR, contents_selector)
+                        # # contents = driver.find_element(By.CLASS_NAME, "contents")
+                        content_casting= contents.find_element(By.CSS_SELECTOR, ".content.casting")
+                        # class="content" 요소 찾기
                         content_element = contents.find_element(By.CLASS_NAME, "content")
                         # content 요소 하위 모든 텍스트 추출
                         content_text = content_element.text
