@@ -26,7 +26,7 @@ def extract_ticket_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(53410, 2)
+    open_page_lists = get_open_page_url(53413, 2)
 
     num = ''
     crawling_list=[]
@@ -48,55 +48,52 @@ def extract_ticket_html():
                 print("--------------------------------------")
                 # `btn` 클래스 내의 모든 링크 수집
                 btn_element = detail_element.find_element(By.CLASS_NAME, "btn")
-                a_elements = btn_element.find_elements(By.TAG_NAME, "a")
-                print("------------------------------------")
-                for a in a_elements:
-                    href = a.get_attribute("href")
-                    if href and 'http' in href:
-                        try:
-                            ticket_num = href.split('/')[-1].split('?')[0]  # '/' 뒤 숫자 추출
-                            print(f"추출된 숫자: {ticket_num}")
-                        except Exception as e:
-                            print(f"숫자 추출 실패: {e}")
+                elements = btn_element.find_elements(By.TAG_NAME, "a")
+                
+
+                for element in elements:
+                    href = element.get_attribute("href")
+                    if href and href.startswith("http"):
                             
-                        link = a.get_attribute("href")
-                        print(f"{href} 접속중...")
-                        driver.get(link)
+                                
+                            link = href
+                            print(f"{link} 접속중...")
+                            driver.get(link)
 
-                        window_handles = driver.window_handles
-                        # 마지막 창으로 전환
-                        driver.switch_to.window(window_handles[-1])
+                            window_handles = driver.window_handles
+                            # 마지막 창으로 전환
+                            driver.switch_to.window(window_handles[-1])
 
-                        print("페이지 로드 완료")
+                            print("페이지 로드 완료")
 
-                        try:
-                            # id="container" 요소 대기
-                            container_selector = "#container"  # CSS Selector: id로 선택
-                            WebDriverWait(driver, 20).until(
-                                EC.presence_of_element_located((By.CSS_SELECTOR, container_selector))
-                            )
-                            print("------------------------------")
-                            container = driver.find_element(By.CSS_SELECTOR, container_selector)
-                            divs = container.find_elements(By.TAG_NAME, 'div')
-                            found = False  # productMain을 찾았는지 확인하기 위한 플래그
-                            print("------------------------------")
-                            for div in divs:
-                                # 각 div의 클래스 속성 확인
-                                class_name = div.get_attribute("class")
-                                if "productMain" in class_name:  # productMain 클래스가 포함된 경우
-                                    product_main = div.get_attribute("outerHTML")
-                                    # HTML 추출
-                                    production_html = product_main.get_attribute("outerHTML")
-                                    print("container 영역 HTML 추출 완료")
-                                    print(production_html)
-                                # BeautifulSoup으로 HTML 포맷팅
-                                soup = BeautifulSoup(production_html, "html.parser")
-                                crawling_list.append({"data":soup, "num":ticket_num}) 
-                                # 결과 출력
-                                print(crawling_list)
+                            try:
+                                # id="container" 요소 대기
+                                container_selector = "#container"  # CSS Selector: id로 선택
+                                WebDriverWait(driver, 20).until(
+                                    EC.presence_of_element_located((By.CSS_SELECTOR, container_selector))
+                                )
+                                print("------------------------------")
+                                container = driver.find_element(By.CSS_SELECTOR, container_selector)
+                                divs = container.find_elements(By.TAG_NAME, 'div')
+                                found = False  # productMain을 찾았는지 확인하기 위한 플래그
+                                print("------------------------------")
+                                for div in divs:
+                                    # 각 div의 클래스 속성 확인
+                                    class_name = div.get_attribute("class")
+                                    if "productMain" in class_name:  # productMain 클래스가 포함된 경우
+                                        product_main = div.get_attribute("outerHTML")
+                                        # HTML 추출
+                                        production_html = product_main.get_attribute("outerHTML")
+                                        print("container 영역 HTML 추출 완료")
+                                        print(production_html)
+                                    # BeautifulSoup으로 HTML 포맷팅
+                                    soup = BeautifulSoup(production_html, "html.parser")
+                                    crawling_list.append({"data":soup, "num":ticket_num}) 
+                                    # 결과 출력
+                                    print(crawling_list)
 
-                        except:
-                            print("container를 찾지 못함")
+                            except:
+                                print("container를 찾지 못함")
                     else:
                         print("***************예약하기 버튼이 없습니다.***************")
                         break
