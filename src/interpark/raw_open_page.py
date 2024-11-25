@@ -14,7 +14,6 @@ import os
 def extract_open_html():
     # ChromeOptions 객체 생성
     options = Options()
-    # Headless 모드 활성화
     options.add_argument("--no-sandbox")  # 추가한 옵션
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")  # 추가한 옵션
@@ -25,8 +24,8 @@ def extract_open_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49300, 1)
-
+    open_page_lists = get_open_page_url(49546,10000)
+    
     num = ''
     crawling_list=[]
     try:
@@ -34,9 +33,6 @@ def extract_open_html():
             print(f"{page} 접속 중...")
             driver.get(page)
 
-            # URL에서 num 값 추출
-            num = page.split("groupno=")[1].split("&")[0]
-            
             try:
                 # `notice_detail` 클래스 요소가 로드될 때까지 대기
                 WebDriverWait(driver, 10).until(
@@ -50,10 +46,11 @@ def extract_open_html():
                 # BeautifulSoup으로 HTML 포맷팅
                 soup = BeautifulSoup(inner_html, "html.parser")
                 crawling_list.append({"data":soup, "num":num})
+          
             except Exception as e:
                 print(f"html 추출 중 오류 발생: {e}")
-                continue
-
+                    
+            
     except Exception as e:
                 print(f"오픈공지 접속 에러 : {e}")
 
