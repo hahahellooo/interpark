@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:fe8a73d4f6e97e891203a670bb832766f8ffe69522e011a50b5766c501365c7b"
+content_hash = "sha256:1b162da7b3d36b5db30e2393d6774f86217b7c0b0e790886df7b690364f02d01"
 
 [[metadata.targets]]
 requires_python = "==3.11.*"
@@ -607,6 +607,21 @@ files = [
     {file = "charset_normalizer-3.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:cee4373f4d3ad28f1ab6290684d8e2ebdb9e7a1b74fdc39e4c211995f77bec27"},
     {file = "charset_normalizer-3.4.0-py3-none-any.whl", hash = "sha256:fe9f97feb71aa9896b81973a7bbada8c49501dc73e58a10fcef6663af95e5079"},
     {file = "charset_normalizer-3.4.0.tar.gz", hash = "sha256:223217c3d4f82c3ac5e29032b3f1c2eb0fb591b72161f86d93f5719079dae93e"},
+]
+
+[[package]]
+name = "chromedriver-autoinstaller"
+version = "0.6.4"
+requires_python = ">=3.6"
+summary = "Automatically install chromedriver that supports the currently installed version of chrome."
+groups = ["default"]
+marker = "python_version == \"3.11\""
+dependencies = [
+    "packaging>=23.1",
+]
+files = [
+    {file = "chromedriver-autoinstaller-0.6.4.tar.gz", hash = "sha256:1b4df04b87e6107c730085b98e5fd541db3d1777c32b8bd08e2ca4b1244050af"},
+    {file = "chromedriver_autoinstaller-0.6.4-py3-none-any.whl", hash = "sha256:b12ed187ca9fac4d744deb588d221222ed50836384607e5303e6eab98bb9dc64"},
 ]
 
 [[package]]

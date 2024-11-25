@@ -1,6 +1,6 @@
 [project]
 name = "interpark"
-version = "0.1.5"
+version = "0.2.0"
 description = "Default template for PDM package"
 authors = [
     {name = "hahahellooo", email = "hahahello777@gmail.com"},
@@ -11,6 +11,7 @@ dependencies = [
     "webdriver-manager>=4.0.2",
     "pymongo>=4.10.1",
     "apache-airflow-providers-amazon>=9.1.0",
+    "chromedriver-autoinstaller>=0.6.4",
 ]
 requires-python = ">=3.9"
 readme = "README.md"
