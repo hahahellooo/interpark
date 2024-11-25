@@ -25,7 +25,7 @@ def extract_open_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49546,100)
+    open_page_lists = get_open_page_url(49546,5000)
     
     num = ''
     crawling_list=[]
@@ -33,6 +33,7 @@ def extract_open_html():
         for page in open_page_lists:
             print(f"{page} 접속 중...")
             driver.get(page)
+            num = page.split("groupno=")[1].split("&")[0]
 
             try:
                 # `notice_detail` 클래스 요소가 로드될 때까지 대기
