@@ -11,11 +11,12 @@ import time
 import os
 
 
-def extract_html():
+def extract_ticket_html():
     # ChromeOptions 객체 생성
     options = Options()
     # Headless 모드 활성화
     options.add_argument("--no-sandbox")  # 추가한 옵션
+    options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")  # 추가한 옵션
     options.add_argument("--ignore-ssl-errors=yes")
@@ -25,7 +26,7 @@ def extract_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49300, 1)
+    open_page_lists = get_open_page_url(53403, 1)
 
     # 결과 저장 변수 초기화
     inner_html = None
@@ -35,75 +36,83 @@ def extract_html():
         for page in open_page_lists:
             print(f"{page} 접속 중...")
             driver.get(page)
-
-            # `notice_detail` 클래스 요소가 로드될 때까지 대기
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "notice_detail"))
-            )
-
-            # `notice_detail` 클래스 요소 찾기
-            notice_detail_element = driver.find_element(By.CLASS_NAME, "notice_detail")
-            # 내부 HTML 가져오기
-            inner_html = notice_detail_element.get_attribute("outerHTML")
-            # BeautifulSoup으로 HTML 포맷팅
-            soup = BeautifulSoup(inner_html, "html.parser")
-            open_html = soup.prettify()
+            num = page.split("groupno=")[1].split("&")[0]
+            print(num)
 
             try:
+                # `btn` 클래스 요소 대기
                 WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "btn"))
                 )
-
                 # `btn` 클래스 내의 모든 링크 수집
                 btn_element = driver.find_element(By.CLASS_NAME, "btn")
-                links = btn_element.find_elements(By.TAG_NAME, "a")
+                a_elements = btn_element.find_elements(By.TAG_NAME, "a")
 
-                for link in links:
-                    href = link.get_attribute("href")
-                    if href:
-                        if 'http' in href:  # 유효한 URL인지 확인
-                            print(f"{href} 접속중...")
-                            driver.get(href)
+                
+                for a in a_elements:
+                    href = a.get_attribute("href")
+                    if href and 'http' in href:
                         
-                            # 창 전환 처리
-                            window_handles = driver.window_handles
-                            driver.switch_to.window(window_handles[-1])
+                        try:
+                            ticket_num = href.split('/')[-1].split('?')[0]  # '/' 뒤 숫자 추출
+                            print(f"추출된 숫자: {last_part}")
+                        except Exception as e:
+                            print(f"숫자 추출 실패: {e}")
+                            
+                        link = a.get_attribute("href")
+                        print(f"{href} 접속중...")
+                        driver.get(link)
 
-                            try:
-                                # id="container" 요소 대기
-                                container_selector = "#container"
-                                WebDriverWait(driver, 20).until(
-                                    EC.presence_of_element_located((By.CSS_SELECTOR, container_selector))
-                                )
-                                container = driver.find_element(By.CSS_SELECTOR, container_selector)
-                                divs = container.find_elements(By.TAG_NAME,'div')
-                                for div in divs:
-                                     class_name = div.get_attribute("class")
-                                     if "productMain" in class_name:
-                                        product_main_html = div.get_attribute("outerHTML")
+                        window_handles = driver.window_handles
+                        # 마지막 창으로 전환
+                        driver.switch_to.window(window_handles[-1])
 
-                                        # BeautifulSoup으로 HTML 포맷팅
-                                        soup = BeautifulSoup(product_main_html, "html.parser")
-                                        formatted_html = soup.prettify()
+                        print("페이지 로드 완료")
 
-                                        # 결과 출력
-                                        print(formatted_html)
+                        try:
+                            # id="container" 요소 대기
+                            container_selector = "#container"  # CSS Selector: id로 선택
+                            WebDriverWait(driver, 20).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, container_selector))
+                            )
+                            container = driver.find_element(By.CSS_SELECTOR, container_selector)
 
-                            except Exception as inner_e:
-                                print(f"container 또는 productionMain을 찾지 못함: {inner_e}")
-                                continue  # 다음 링크로 넘어감
+                            production_selector = "#productionMain"  # CSS Selector: id로 선택
+                            WebDriverWait(driver, 20).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, production_selector))
+                            )
+                            production = driver.find_element(By.CSS_SELECTOR, production_selector)
 
+                            # HTML 추출
+                            production_html = production.get_attribute("outerHTML")
+                            print("container 영역 HTML 추출 완료")
+
+                            # BeautifulSoup으로 HTML 포맷팅
+                            soup = BeautifulSoup(production_html, "html.parser")
+                            crawling_list.append({"data":soup, "num":ticket_num}) 
+                            # 결과 출력
+                            print(soup)
+
+
+                        except:
+                            print("container를 찾지 못함")
                     else:
                         print("***************예약하기 버튼이 없습니다.***************")
-                        continue
-                
+                        break
+                        
             except Exception as e:
                 print(f"예매 페이지 정보 크롤링 실패: {e}")
+        print(num, ticket_num)
+        return inner_html, container_html
 
-        return inner_html, formatted_html
     except Exception as e:
-                print(f"공지페이지 접속 에러 : {e}")
-                               
-# 함수 실행
-extract_html()
+        print(f"{page} 페이지 접속 에러: {e}")
+
+    finally:
+        driver.quit()
+
+if __name__ == "__main__":
+
+    # 함수 실행
+    extract_ticket_html()
 
