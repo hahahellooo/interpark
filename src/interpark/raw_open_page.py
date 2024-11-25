@@ -24,7 +24,7 @@ def extract_open_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49546,10000)
+    open_page_lists = get_open_page_url(49546,100)
     
     num = ''
     crawling_list=[]
@@ -49,16 +49,17 @@ def extract_open_html():
           
             except Exception as e:
                 print(f"html 추출 중 오류 발생: {e}")
-                    
+                continue    
             
     except Exception as e:
                 print(f"오픈공지 접속 에러 : {e}")
 
     finally:
           driver.quit()
-
+    print(crawling_list)
     return crawling_list
-                               
-# 함수 실행
-extract_open_html()
+
+if __name__ == "__main__":
+    # 함수 실행
+    extract_open_html()
 
