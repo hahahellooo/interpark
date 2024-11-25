@@ -25,7 +25,7 @@ def extract_open_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49546,5000)
+    open_page_lists = get_open_page_url(49546,2000)
     #open_page_lists = get_open_page_url(53403,2)
     
     num = ''
@@ -49,6 +49,7 @@ def extract_open_html():
                 # BeautifulSoup으로 HTML 포맷팅
                 soup = BeautifulSoup(inner_html, "html.parser")
                 crawling_list.append({"data":soup, "num":num})
+                print(f"{num} 저장 완료")
                  
             except Exception as e:
                 print(f"html 추출 중 오류 발생: {e}")

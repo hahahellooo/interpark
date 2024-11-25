@@ -142,7 +142,7 @@ def transform_raw():
                                 elif "관람연령" in text:
                                     ticket_data["rating"] = text.split("관람연령")[1].strip()
                                 elif "가격" in text:
-                                        ticket_data["price"] = text.split("가격")[1].strip()
+                                        ticket_data["price"] = None
                                         break
                         print("공연 관련 정보 추출 완료")
                     except Exception as e:                     
