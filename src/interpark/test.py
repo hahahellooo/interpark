@@ -24,11 +24,6 @@ def extract_container_html():
     # WebDriver 객체 생성
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    save_dir = "./data"  # 원하는 경로로 설정
-    os.makedirs(save_dir, exist_ok=True)  # 경로가 없으면 생성
-
-    save_path = os.path.join(save_dir, "formatted_container_output.txt")  # 파일 전체 경로
-
 
     try:
         page = "https://tickets.interpark.com/goods/24016386?"  # 대상 URL
@@ -54,17 +49,12 @@ def extract_container_html():
 
             # BeautifulSoup으로 HTML 포맷팅
             soup = BeautifulSoup(container_html, "html.parser")
-            formatted_html = soup.prettify()
 
             # 결과 출력
-            print(formatted_html)
+            print(soup)
+            return soup
         except:
             print(f"{page} 접속 실패 ")
-
-        # HTML 파일로 저장
-        with open("formatted_container_output.txt", "w", encoding="utf-8") as file:
-            file.write(formatted_html)
-            print("txt 저장 완료: formatted_container_output.txt")
 
     except Exception as e:
         print(f"크롤링 중 에러 발생: {e}")
