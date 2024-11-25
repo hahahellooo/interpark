@@ -44,13 +44,12 @@ def extract_html():
 
             # `notice_detail` 클래스 요소 찾기
             notice_detail_element = driver.find_element(By.CLASS_NAME, "notice_detail")
-
             # 내부 HTML 가져오기
             inner_html = notice_detail_element.get_attribute("outerHTML")
             # BeautifulSoup으로 HTML 포맷팅
             soup = BeautifulSoup(inner_html, "html.parser")
             open_html = soup.prettify()
-            print("공지 페이지 크롤링 성공")
+            #print(open_html)
             print("**************************************************************")
 
             try:
@@ -65,9 +64,10 @@ def extract_html():
                 
                 for a in a_elements:
                     href = a.get_attribute("href")
+                    
                     if href and 'http' in href:
                         link = a.get_attribute("href")
-                        print("예매 페이지 접속중...")
+                        print(f"{href} 접속중...")
                         driver.get(link)
 
                         window_handles = driver.window_handles
@@ -88,24 +88,33 @@ def extract_html():
                             )
                             container = driver.find_element(By.CSS_SELECTOR, container_selector)
 
+                            production_selector = "#productionMain"  # CSS Selector: id로 선택
+                            WebDriverWait(driver, 20).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, production_selector))
+                            )
+                            production = driver.find_element(By.CSS_SELECTOR, production_selector)
+
                             # HTML 추출
-                            container_html = container.get_attribute("outerHTML")
+                            production_html = production.get_attribute("outerHTML")
                             print("container 영역 HTML 추출 완료")
 
                             # BeautifulSoup으로 HTML 포맷팅
-                            soup = BeautifulSoup(container_html, "html.parser")
+                            soup = BeautifulSoup(production_html, "html.parser")
                             formatted_html = soup.prettify()
 
                             # 결과 출력
                             print(formatted_html)
+
                         except:
                             print("container를 찾지 못함")
-
+                    else:
+                        print("***************예약하기 버튼이 없습니다.***************")
+                        break
+                        
             except Exception as e:
                 print(f"예매 페이지 정보 크롤링 실패: {e}")
 
-
-        # return inner_html, container_html
+        return inner_html, container_html
 
     except Exception as e:
         print(f"{page} 페이지 접속 에러: {e}")
