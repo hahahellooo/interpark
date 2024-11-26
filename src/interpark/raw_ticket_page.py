@@ -23,8 +23,11 @@ def extract_ticket_html():
     options.add_argument("--ignore-certificate-errors")
 
     # WebDriver 객체 생성
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
+   # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Remote(
+        command_executor=SELENIUM_GRID_URL,
+        options=options
+    )
     # 크롤링 대상 URL
     #open_page_lists = get_open_page_url(49609,1000)
     open_page_lists = get_open_page_url(53208,2)
