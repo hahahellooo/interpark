@@ -14,6 +14,7 @@ from interpark.open_page_url import get_open_page_url
 def extract_ticket_html():
     # ChromeOptions 객체 생성f
     options = Options()
+    #options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")  # headless 있으면 동작안됌
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu") 
@@ -24,8 +25,8 @@ def extract_ticket_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49609,1000)
-    #open_page_lists = get_open_page_url(53208,2)
+    #open_page_lists = get_open_page_url(49609,1000)
+    open_page_lists = get_open_page_url(53208,2)
     
     num = ''
     ticket_num =''
@@ -59,7 +60,7 @@ def extract_ticket_html():
                             book_button = WebDriverWait(driver, 10).until(
                                 EC.element_to_be_clickable((By.XPATH, "//a[@class='btn_book']"))
                             )
-
+                            print("-----------------------------------------")
                             # 버튼 클릭
                             book_button.click()
                             # 모든 창 핸들 가져오기
@@ -67,19 +68,25 @@ def extract_ticket_html():
                             
                             # 새로 열린 창으로 전환
                             driver.switch_to.window(window_handles[-1])
-
+                            print("-----------------------------------------")
                             # 페이지 작업 수행
                             print("현재 창 URL:", driver.current_url)
+                            
+                            try:
+                                
+                                WebDriverWait(driver, 20).until(
+                                    EC.presence_of_element_located((By.CLASS_NAME, "productMain"))
+                                )
+                                print("-----------------------------------------")
+                                # productMain 하위의 모든 HTML 가져오기
+                                product_html = driver.find_element(By.CLASS_NAME, "productMain").get_attribute('outerHTML')
+                                print("-----------------------------------------")
+                                soup = BeautifulSoup(product_html, "html.parser")
+                                crawling_list.append({"data":soup, "num":num, "ticket_num":ticket_num})
+                                print(f"{ticket_num} 저장 완료")
+                            except Exception as e:
 
-                            WebDriverWait(driver, 20).until(
-                                EC.presence_of_element_located((By.CLASS_NAME, "productMain"))
-                            )
-
-                            # productMain 하위의 모든 HTML 가져오기
-                            product_html = driver.find_element(By.CLASS_NAME, "productMain").get_attribute('outerHTML')
-                            soup = BeautifulSoup(product_html, "html.parser")
-                            crawling_list.append({"data":soup, "num":num, "ticket_num":ticket_num})
-                            print(f"{ticket_num} 저장 완료")
+                                print(e)
                         
                         except Exception as e:
                             print(f"html 추출 중 오류 발생: {e}")
@@ -94,6 +101,7 @@ def extract_ticket_html():
     finally:
         driver.quit()
     
+    print(crawling_list)
     return crawling_list
 
 if __name__ == "__main__":

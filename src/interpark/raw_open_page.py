@@ -15,11 +15,12 @@ def extract_open_html():
     # ChromeOptions 객체 생성
     options = Options()
     options.add_argument("--no-sandbox")  # 추가한 옵션
-    options.add_argument("--headless")
+    #options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")  # 추가한 옵션
     options.add_argument("--ignore-ssl-errors=yes")
     options.add_argument("--ignore-certificate-errors")
+    options.add_argument("--start-maximized")
 
     # WebDriver 객체 생성
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
