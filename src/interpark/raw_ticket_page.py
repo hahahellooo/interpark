@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup  # HTML 포맷팅을 위한 라이브러리
 from webdriver_manager.chrome import ChromeDriverManager
+import re
 from interpark.open_page_url import get_open_page_url
 import time
 import os
@@ -48,45 +49,47 @@ def extract_ticket_html():
                     if href and 'http' in href:  # 유효한 URL인지 확인
                         link = a.get_attribute("href")
                         print(link)
-                        
-                        ticket_num = link.split("groupno=")[1].split("&")[0]
+
+                        ticket_num = re.search(r'/(\d+)[\?#]?', link).group(1)
                         print(ticket_num)
-           
-            except Exception as e:
-                print(f"link가 없습니다")
 
            
-                    #     try:
-                    #         # id="container" 요소 대기
-                    #         container_selector = "#container"  # CSS Selector: id로 선택
-                    #         WebDriverWait(driver, 20).until(
-                    #             EC.presence_of_element_located((By.CSS_SELECTOR, container_selector))
-                    #         )
-                    #         print("------------------------------")
-                    #         container = driver.find_element(By.CSS_SELECTOR, container_selector)
-                    #         divs = container.find_elements(By.TAG_NAME, 'div')
-                    #         found = False  # productMain을 찾았는지 확인하기 위한 플래그
-                    #         print("------------------------------")
-                    #         for div in divs:
-                    #             # 각 div의 클래스 속성 확인
-                    #             class_name = div.get_attribute("class")
-                    #             if "productMain" in class_name:  # productMain 클래스가 포함된 경우
-                    #                 product_main = div.get_attribute("outerHTML")
-                    #                 # HTML 추출
-                    #                 production_html = product_main.get_attribute("outerHTML")
-                    #                 print("container 영역 HTML 추출 완료")
-                    #                 print(production_html)
-                    #             # BeautifulSoup으로 HTML 포맷팅
-                    #             soup = BeautifulSoup(production_html, "html.parser")
-                    #             crawling_list.append({"data":soup, "num":ticket_num}) 
-                    #             # 결과 출력
-                    #             print(crawling_list)
+                     
+                        try:
+                            driver.get(link)
+                            # id="container" 요소 대기
+                            container_selector = "#container"  # CSS Selector: id로 선택
+                            WebDriverWait(driver, 20).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, container_selector))
+                            )
+                            print("------------------------------")
+                            container = driver.find_element(By.CSS_SELECTOR, container_selector)
+                            divs = container.find_elements(By.TAG_NAME, 'div')
+                            for div in divs:
+                                print(div)
+                            found = False  # productMain을 찾았는지 확인하기 위한 플래그
+                            productmain = divs.find_element(By.CLASS_NAME,'productMain')
+                            print(class_name)
+                            print(productmain)
+                                # print("------------------------------")
+                                # if "productMain" in class_name:  # productMain 클래스가 포함된 경우
+                                #     print("------------------------------")
+                                #     product_main = div.get_attribute("outerHTML")
+                                #     # HTML 추출
+                                #     production_html = product_main.get_attribute("outerHTML")
+                                #     print("container 영역 HTML 추출 완료")
+                                #     print(production_html)
+                                # # BeautifulSoup으로 HTML 포맷팅
+                                # soup = BeautifulSoup(production_html, "html.parser")
+                                # crawling_list.append({"data":soup, "num":ticket_num}) 
+                                # # 결과 출력
+                                # print(crawling_list)
 
-                    #     except:
-                    #         print("container를 찾지 못함")
-                    # else:
-                    #     print("***************예약하기 버튼이 없습니다.***************")
-                    #     continue
+                        except:
+                            print("container를 찾지 못함")
+                    else:
+                        print("***************예약하기 버튼이 없습니다.***************")
+                        continue
                         
             except Exception as e:
                 print(f"예매 페이지 정보 크롤링 실패: {e}")
