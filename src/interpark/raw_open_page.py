@@ -27,7 +27,7 @@ def extract_open_html():
     # 크롤링 대상 URL
     #open_page_lists = get_open_page_url(49546,500)
     #open_page_lists = get_open_page_url(53403,2)
-    open_page_lists = get_open_page_url(49546,20)
+    open_page_lists = get_open_page_url(49566,50)
     
     num = ''
     crawling_list=[]
