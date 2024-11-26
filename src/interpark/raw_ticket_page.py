@@ -14,6 +14,7 @@ from interpark.open_page_url import get_open_page_url
 def extract_ticket_html():
     # ChromeOptions 객체 생성f
     options = Options()
+    options.binary_location = "/usr/bin/google-chrome" #try
     #options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")  # headless 있으면 동작안됌
     options.add_argument("--disable-dev-shm-usage")
