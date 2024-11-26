@@ -10,6 +10,7 @@ import time
 
 from interpark.open_page_url import get_open_page_url
 
+SELENIUM_GRID_URL= "http://selenium-chrome:4444/wd/hub"
 
 def extract_ticket_html():
     # ChromeOptions 객체 생성f
