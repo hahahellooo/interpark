@@ -26,7 +26,7 @@ def extract_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(53403, 1)
+    open_page_lists = get_open_page_url(53411, 1)
 
     # 결과 저장 변수 초기화
     inner_html = None
