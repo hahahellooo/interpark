@@ -24,7 +24,7 @@ def extract_ticket_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    open_page_lists = get_open_page_url(49609,1000)
+    open_page_lists = get_open_page_url(49609,3)
     #open_page_lists = get_open_page_url(53208,2)
     
     num = ''
@@ -94,7 +94,6 @@ def extract_ticket_html():
     finally:
         driver.quit()
     
-    print(crawling_list)
     return crawling_list
 
 if __name__ == "__main__":
