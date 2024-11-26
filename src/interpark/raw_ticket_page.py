@@ -60,7 +60,6 @@ def extract_ticket_html():
                             book_button = WebDriverWait(driver, 10).until(
                                 EC.element_to_be_clickable((By.XPATH, "//a[@class='btn_book']"))
                             )
-                            print("-----------------------------------------")
                             # 버튼 클릭
                             book_button.click()
                             # 모든 창 핸들 가져오기
@@ -68,7 +67,6 @@ def extract_ticket_html():
                             
                             # 새로 열린 창으로 전환
                             driver.switch_to.window(window_handles[-1])
-                            print("-----------------------------------------")
                             # 페이지 작업 수행
                             print("현재 창 URL:", driver.current_url)
                             
@@ -77,10 +75,8 @@ def extract_ticket_html():
                                 WebDriverWait(driver, 20).until(
                                     EC.presence_of_element_located((By.CLASS_NAME, "productMain"))
                                 )
-                                print("-----------------------------------------")
                                 # productMain 하위의 모든 HTML 가져오기
                                 product_html = driver.find_element(By.CLASS_NAME, "productMain").get_attribute('outerHTML')
-                                print("-----------------------------------------")
                                 soup = BeautifulSoup(product_html, "html.parser")
                                 crawling_list.append({"data":soup, "num":num, "ticket_num":ticket_num})
                                 print(f"{ticket_num} 저장 완료")
@@ -101,7 +97,6 @@ def extract_ticket_html():
     finally:
         driver.quit()
     
-    print(crawling_list)
     return crawling_list
 
 if __name__ == "__main__":
