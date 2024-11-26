@@ -22,7 +22,7 @@ def extract_ticket_html():
     options.add_argument("--ignore-certificate-errors")
 
     # WebDriver 객체 생성
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager(cache_valid_range=0).install()), options=options)
 
     # 크롤링 대상 URL
     #open_page_lists = get_open_page_url(49609,1000)
