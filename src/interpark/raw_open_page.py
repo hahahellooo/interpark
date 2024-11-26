@@ -25,9 +25,8 @@ def extract_open_html():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 크롤링 대상 URL
-    #open_page_lists = get_open_page_url(49546,500)
-    #open_page_lists = get_open_page_url(53403,2)
-    open_page_lists = get_open_page_url(49609,100)
+    #open_page_lists = get_open_page_url(49609,100)
+    open_page_lists = get_open_page_url(49709,500)
     
     num = ''
     crawling_list=[]
