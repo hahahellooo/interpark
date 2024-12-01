@@ -92,7 +92,8 @@ def html_parsing():
                 except Exception as e:
                     print(f"Error while processing base file {base_file_number}: {e}")
             
-            print(ticket_data) 
+            print(ticket_data)
+            return ticket_data
             # 파일 처리 후 다음 파일로 이동
             base_file_number += 1
         else:
