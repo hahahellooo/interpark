@@ -105,6 +105,7 @@ def extract_data(soup):
         "title": None,
         "category": None,
         "location": None,
+        "region": None,
         "price": None,
         "start_date": None,
         "end_date": None,
