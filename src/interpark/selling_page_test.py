@@ -14,7 +14,7 @@ def transform_raw():
     # ChromePtions 객체 생성
     options = Options()
     options.add_argument("--no-sandbox")  
-    options.add_argument("--headless")
+    #options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu") 
     options.add_argument("--ignore-ssl-errors=yes")
@@ -151,80 +151,80 @@ def transform_raw():
                     except Exception as e:                     
                         print("공연 관련 정보 summay를 찾지 못했습니다.")
 
-                    # show_time 추출
-                    # try:
+                    #show_time 추출
+                    try:
                         
-                    #     contents = driver.find_element(By.CLASS_NAME, "contents")
+                        contents = driver.find_element(By.CLASS_NAME, "contents")
                        
-                    #     content_element = contents.find_element(By.CSS_SELECTOR, ".content")
-                    #     # content 요소 하위 모든 텍스트 추출
-                    #     content_text = content_element.text
-                    #     split_text = content_text.split("공연시간 정보")
+                        content_element = contents.find_element(By.CSS_SELECTOR, ".content")
+                        # content 요소 하위 모든 텍스트 추출
+                        content_text = content_element.text
+                        split_text = content_text.split("공연시간 정보")
                         
-                    #     if len(split_text) > 1:
-                    #         result = split_text[1].strip() 
-                    #         ticket_data['show_time'] = result
-                    #         print("show_time 추출 완료")
+                        if len(split_text) > 1:
+                            result = split_text[1].strip() 
+                            ticket_data['show_time'] = result
+                            print("show_time 추출 완료")
 
-                    #     try:
-                    #         # contentToggleBtn 클릭
-                    #         toggle_button = WebDriverWait(driver, 10).until(
-                    #             EC.element_to_be_clickable((By.CSS_SELECTOR, ".contentToggleBtn"))
-                    #         )
-                    #         if toggle_button:
-                    #             driver.execute_script("arguments[0].click();", toggle_button)
-                    #             print("버튼 클릭 성공")
+                        try:
+                            # contentToggleBtn 클릭
+                            toggle_button = WebDriverWait(driver, 10).until(
+                                EC.element_to_be_clickable((By.CSS_SELECTOR, ".contentToggleBtn"))
+                            )
+                            if toggle_button:
+                                driver.execute_script("arguments[0].click();", toggle_button)
+                                print("버튼 클릭 성공")
 
-                    #         # castingList가 로드될 때까지 대기
-                    #         content_casting = WebDriverWait(driver, 10).until(
-                    #             EC.presence_of_element_located((By.CSS_SELECTOR, ".prdContents.detail"))
-                    #         )
-                    #         casting_list = WebDriverWait(content_casting, 10).until(
-                    #             EC.presence_of_element_located((By.CSS_SELECTOR, ".castingList"))
-                    #         )
+                            # castingList가 로드될 때까지 대기
+                            content_casting = WebDriverWait(driver, 10).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".prdContents.detail"))
+                            )
+                            casting_list = WebDriverWait(content_casting, 10).until(
+                                EC.presence_of_element_located((By.CSS_SELECTOR, ".castingList"))
+                            )
 
-                    #         # castingItem 요소들 찾기
-                    #         casting_items = casting_list.find_elements(By.CLASS_NAME, "castingItem")
+                            # castingItem 요소들 찾기
+                            casting_items = casting_list.find_elements(By.CLASS_NAME, "castingItem")
                             
-                    #         # 각 castingItem에서 데이터 추출
-                    #         for item in casting_items:
+                            # 각 castingItem에서 데이터 추출
+                            for item in casting_items:
                                 
-                    #             # castingProfile 하위 img src 추출
-                    #             profile_img_elements = item.find_elements(By.CLASS_NAME, "castingProfile")  # 모든 img 요소 가져오기
-                    #             profile_img_srcs = [img.find_element(By.TAG_NAME, "img").get_attribute("src") for img in profile_img_elements]
+                                # castingProfile 하위 img src 추출
+                                profile_img_elements = item.find_elements(By.CLASS_NAME, "castingProfile")  # 모든 img 요소 가져오기
+                                profile_img_srcs = [img.find_element(By.TAG_NAME, "img").get_attribute("src") for img in profile_img_elements]
                                 
-                    #             # castingInfo 하위의 castingActor, castingName 텍스트 추출
-                    #             casting_info = item.find_element(By.CLASS_NAME, "castingInfo")
+                                # castingInfo 하위의 castingActor, castingName 텍스트 추출
+                                casting_info = item.find_element(By.CLASS_NAME, "castingInfo")
                                 
-                    #             # 모든 배우 이름 가져오기
-                    #             actor_names = casting_info.find_elements(By.CLASS_NAME, "castingActor")
-                    #             actor_texts = [actor_name.text for actor_name in actor_names]
+                                # 모든 배우 이름 가져오기
+                                actor_names = casting_info.find_elements(By.CLASS_NAME, "castingActor")
+                                actor_texts = [actor_name.text for actor_name in actor_names]
                                 
-                    #             # 모든 역할 이름 가져오기
-                    #             role_names = casting_info.find_elements(By.CLASS_NAME, "castingName")
-                    #             role_texts = [role_name.text for role_name in role_names]
+                                # 모든 역할 이름 가져오기
+                                role_names = casting_info.find_elements(By.CLASS_NAME, "castingName")
+                                role_texts = [role_name.text for role_name in role_names]
 
-                    #             # 데이터 업데이트
-                    #             for img_src, actor, role in zip(profile_img_srcs, actor_texts, role_texts):
-                    #                 # Casting 정보 업데이트
-                    #                 if ticket_data["casting"] is None:
-                    #                     ticket_data["casting"] = []
-                    #                 ticket_data["casting"].append(f"{actor}:{role}")
+                                # 데이터 업데이트
+                                for img_src, actor, role in zip(profile_img_srcs, actor_texts, role_texts):
+                                    # Casting 정보 업데이트
+                                    if ticket_data["casting"] is None:
+                                        ticket_data["casting"] = []
+                                    ticket_data["casting"].append(f"{actor}:{role}")
                                     
-                    #                 # Artist 정보는 마지막 데이터를 기준으로 업데이트
-                    #                 if ticket_data["artist"] is None:
-                    #                     ticket_data["artist"] = []  # 리스트로 초기화
-                    #                 ticket_data["artist"].append({
-                    #                     "artist_name": actor,
-                    #                     "artist_url": img_src
-                    #                     })
-                    #                 break
+                                    # Artist 정보는 마지막 데이터를 기준으로 업데이트
+                                    if ticket_data["artist"] is None:
+                                        ticket_data["artist"] = []  # 리스트로 초기화
+                                    ticket_data["artist"].append({
+                                        "artist_name": actor,
+                                        "artist_url": img_src
+                                        })
+                                    break
 
-                    #     except Exception as e:
-                    #         print("artist 정보가 없습니다.")
+                        except Exception as e:
+                            print("artist 정보가 없습니다.")
 
-                    # except Exception as e:
-                    #     print("데이터 추출 중 오류 발생:", e)
+                    except Exception as e:
+                        print("데이터 추출 중 오류 발생:", e)
 
                     try:
                         # 가격 데이터가 있는 영역 찾기
