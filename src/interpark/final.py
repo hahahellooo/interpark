@@ -69,8 +69,8 @@ def html_parsing():
             ticket_data = extract_data(soup)
 
             # None 값이 남아있는 경우 base_file_number로 다시 추출
-            if any(value is None for key, value in ticket_data.items() if key != "hosts"):
-                print("Some values are None. Checking base file.")
+        if any(value is None for key, value in ticket_data.items() if key != "hosts"):
+            print("Some values are None. Checking base file.")
                 try:
                     base_file_html = hook.read_key(f'interpark/{base_file_number}.html', bucket_name)
                     base_soup = BeautifulSoup(base_file_html, 'html.parser')

@@ -5,24 +5,7 @@ from datetime import datetime
 ########################
 import re
 
-def normalize_datetime(raw_date, raw_time=None):
-    # 날짜를 xxxx.xx.xx 형식으로 정규화
-    normalized_date = normalize_date(raw_date)
 
-    # 시간이 없는 경우: xxxx.xx.xx 형식 날짜 반환
-    if not raw_time:
-        return normalized_date
-
-    # 숫자만 추출
-    time_number = re.sub(r"[^0-9]", "", raw_time)
-
-    # 시간과 분을 구분
-    if len(time_number) >= 2:  # 최소한 '시' 정보가 있는 경우
-        hour = time_number[:2] #시
-        minute = time_number[2:] if len(time_number) > 2 else "00"  #분
-        return f"{normalized_date} {hour}:{minute}"
-
-    return normalized_date  # 시간 정보가 없다면 날짜만 반환
 def html_parsing():
     aws_conn_id = 'interpark'  # Airflow 연결 ID
     bucket_name = 't1-tu-data'
@@ -122,34 +105,8 @@ def html_parsing():
                                             year_from_start = start_date_match.group(1)
                                             # end_date에 년도 추가
                                             end_date = f"{year_from_start}.{int(end_date_match.group(1)):02d}.{int(end_date_match.group(2)):02d}"
-                                    ticket_data['start_date'] = start_date
-                                    ticket_data['end_date'] = end_date
-
-
-
-                        # 티켓오픈일, 선예매 추출
-                        ticket_open_date = None
-                        fanclub_preopen_date = None
-                        li_elements = base_soup.find_all('li')
-                        for li in li_elements:
-                            strong_tag = li.find('strong')  # strong 태그 찾기
-                            if strong_tag:
-                                strong_text = strong_tag.text.strip()
-                                if "티켓오픈일" in strong_text:
-                                    # 텍스트에서 날짜 추출
-                                    ticket_open_date = li.text.replace(strong_text, '').strip()
-                                elif "선예매" in strong_text:
-                                    # 텍스트에서 날짜 추출
-                                    fanclub_preopen_date = li.text.replace(strong_text, '').strip()
-                        if ticket_open_date:
-                            ticket_data['open_date'] = ticket_open_date
-                        if fanclub_preopen_date:
-                            ticket_data['pre_open_date'] = fanclub_preopen_date
-
-                        # 링크 추출
-                        book_link = base_soup.find('a', class_='btn_book')
-                        if book_link and 'href' in book_link.attrs:
-                            ticket_data['hosts']['ticket_url'] = book_link['href']
+                                        ticket_data['start_date'] = start_date
+                                        ticket_data['end_date'] = end_date
 
                         # 설명 추출
                         desc = base_soup.find('div', class_='info1')
