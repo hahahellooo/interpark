@@ -71,103 +71,90 @@ def html_parsing():
             # None 값이 남아있는 경우 base_file_number로 다시 추출
         if any(value is None for key, value in ticket_data.items() if key != "hosts"):
             print("Some values are None. Checking base file.")
-                try:
-                    base_file_html = hook.read_key(f'interpark/{base_file_number}.html', bucket_name)
-                    base_soup = BeautifulSoup(base_file_html, 'html.parser')
-               
-                    # 제목 추출
-                    info_title = base_soup.find('div', class_='info')
-                    title = info_title.find('h3')
-                    title = title.text.strip()
-                    if title:
-                        if ticket_data['title'] is None:
-                            ticket_data['title'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title)
-
-                    # 공연기간 추출
-                    introduce = base_soup.find('div', class_='introduce')
-                    data = introduce.find('div', class_='data')
-                    if data and ticket_data['start_date'] == None:
-                        p = data.find('p').text.strip()
-                        lines = p.strip().split('\n')
-                        for line in lines:
-                            line = line.replace(" ","").strip()
-                            if "공연일시" in line or "일시" in line or "공연기간" in line or "공연일자" in line:
-                                date = line.split(":")[1].split("~")  # ':' 이후를 가져오고 '~' 기준으로 분리
-                                if len(data) ==1:
-                                    start_date_raw = date[0].strip()
-                                    end_date_raw = start_date_raw
-                                else:
-                                    start_date_raw = date[0].strip()
-                                    end_date_raw = date[1].strip()
-                                # 시작 날짜 처리 (2024년 12월 14일(토) -> 2024.12.14)
-                                start_date_match = re.search(r'(\d{4})년(\d{1,2})월(\d{1,2})일', start_date_raw)
-                                if start_date_match:
-                                    start_date = f"{start_date_match.group(1)}.{int(start_date_match.group(2)):02d}.{int(start_date_match.group(3)):02d}"
-                                    # 종료 날짜 처리 (12월 15일(일) -> 2024.12.15)
-                                    end_date_match = re.search(r'(\d{1,2})월(\d{1,2})일', end_date_raw)
-                                    if end_date_match:
-                                        # start_date에서 년도 추출
-                                        year_from_start = start_date_match.group(1)
-                                        # end_date에 년도 추가
-                                        end_date = f"{year_from_start}.{int(end_date_match.group(1)):02d}.{int(end_date_match.group(2)):02d}"
-                                    ticket_data['start_date'] = start_date
-                                    ticket_data['end_date'] = end_date
-
-                    # 티켓오픈일, 선예매 추출
-                    ticket_open_date = None
-                    fanclub_preopen_date = None
-                    li_elements = base_soup.find_all('li')
-                    for li in li_elements:
-                        strong_tag = li.find('strong')  # strong 태그 찾기
-                        if strong_tag:
-                            strong_text = strong_tag.text.strip()
-                            if "티켓오픈일" in strong_text:
-                                # 텍스트에서 날짜 추출
-                                ticket_open_date = li.text.replace(strong_text, '').strip()
-                                ticket_open_date = convert_to_datetime_format(ticket_open_date) ##
-                            elif "선예매" in strong_text:
-                                # 텍스트에서 날짜 추출
-                                fanclub_preopen_date = li.text.replace(strong_text, '').strip()
-                                fanclub_preopen_date = convert_to_datetime_format(fanclub_preopen_date)##
-                    if ticket_open_date:
-                        ticket_data['open_date'] = ticket_open_date
-                    if fanclub_preopen_date:
-                        ticket_data['pre_open_date'] = fanclub_preopen_date
-
-                    # 링크 추출
-                    book_link = base_soup.find('a', class_='btn_book')
-                    if book_link and 'href' in book_link.attrs:
-                        ticket_data['hosts']['ticket_url'] = book_link['href']
-                
-                    # 설명 추출
-                    desc = base_soup.find('div', class_='info1')
-                    description = desc.find('div', class_='data')
-                    if description:
-                        description = description.text.strip()
-                        ticket_data['description'] = description
-                    
-                    # 캐스팅 정보 추출
-                    #info_sections = base_soup.find_all('div', class_='info2')  # class="info2" 섹션 모두 찾기
-                    #for section in info_sections:
-                        # h4 태그가 "캐스팅"인지 확인
-                        #header = section.find('h4')
-                        #if header and "캐스팅" in header.text:
-                            # 하위의 class="data" 추출
-                            #casting_data = section.find('div', class_='data')
-                            #if casting_data:
-                            #    casting_text = casting_data.text.replace('\n', '').strip()
-                            #    print(casting_text)
-                except Exception as e:
-                    print(f"Error while processing base file {base_file_number}: {e}")
+            try:
+                base_file_html = hook.read_key(f'interpark/{base_file_number}.html', bucket_name)
+                base_soup = BeautifulSoup(base_file_html, 'html.parser')
             
-            print(ticket_data)
-            return ticket_data
-            # 파일 처리 후 다음 파일로 이동
-            base_file_number += 1
-        else:
-            print("처리할 파일이 없습니다.")
-            base_file_number+=1
-            continue
+                # 제목 추출
+                info_title = base_soup.find('div', class_='info')
+                title = info_title.find('h3')
+                title = title.text.strip()
+                if title:
+                    if ticket_data['title'] is None:
+                        ticket_data['title'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title)
+
+                # 공연기간 추출
+                introduce = base_soup.find('div', class_='introduce')
+                data = introduce.find('div', class_='data')
+                if data and ticket_data['start_date'] == None:
+                    p = data.find('p').text.strip()
+                    lines = p.strip().split('\n')
+                    for line in lines:
+                        line = line.replace(" ","").strip()
+                        if "공연일시" in line or "일시" in line or "공연기간" in line or "공연일자" in line:
+                            date = line.split(":")[1].split("~")  # ':' 이후를 가져오고 '~' 기준으로 분리
+                            if len(data) ==1:
+                                start_date_raw = date[0].strip()
+                                end_date_raw = start_date_raw
+                            else:
+                                start_date_raw = date[0].strip()
+                                end_date_raw = date[1].strip()
+                            # 시작 날짜 처리 (2024년 12월 14일(토) -> 2024.12.14)
+                            start_date_match = re.search(r'(\d{4})년(\d{1,2})월(\d{1,2})일', start_date_raw)
+                            if start_date_match:
+                                start_date = f"{start_date_match.group(1)}.{int(start_date_match.group(2)):02d}.{int(start_date_match.group(3)):02d}"
+                                # 종료 날짜 처리 (12월 15일(일) -> 2024.12.15)
+                                end_date_match = re.search(r'(\d{1,2})월(\d{1,2})일', end_date_raw)
+                                if end_date_match:
+                                    # start_date에서 년도 추출
+                                    year_from_start = start_date_match.group(1)
+                                    # end_date에 년도 추가
+                                    end_date = f"{year_from_start}.{int(end_date_match.group(1)):02d}.{int(end_date_match.group(2)):02d}"
+                                ticket_data['start_date'] = start_date
+                                ticket_data['end_date'] = end_date
+
+                # 티켓오픈일, 선예매 추출
+                ticket_open_date = None
+                fanclub_preopen_date = None
+                li_elements = base_soup.find_all('li')
+                for li in li_elements:
+                    strong_tag = li.find('strong')  # strong 태그 찾기
+                    if strong_tag:
+                        strong_text = strong_tag.text.strip()
+                        if "티켓오픈일" in strong_text:
+                            # 텍스트에서 날짜 추출
+                            ticket_open_date = li.text.replace(strong_text, '').strip()
+                            ticket_open_date = convert_to_datetime_format(ticket_open_date) ##
+                        elif "선예매" in strong_text:
+                            # 텍스트에서 날짜 추출
+                            fanclub_preopen_date = li.text.replace(strong_text, '').strip()
+                            fanclub_preopen_date = convert_to_datetime_format(fanclub_preopen_date)##
+                if ticket_open_date:
+                    ticket_data['open_date'] = ticket_open_date
+                if fanclub_preopen_date:
+                    ticket_data['pre_open_date'] = fanclub_preopen_date
+
+                # 링크 추출
+                book_link = base_soup.find('a', class_='btn_book')
+                if book_link and 'href' in book_link.attrs:
+                    ticket_data['hosts']['ticket_url'] = book_link['href']
+            
+                # 설명 추출
+                desc = base_soup.find('div', class_='info1')
+                description = desc.find('div', class_='data')
+                if description:
+                    description = description.text.strip()
+                    ticket_data['description'] = description
+                
+                
+            except Exception as e:
+                print(f"Error while processing base file {base_file_number}: {e}")
+        
+        print(ticket_data)
+        return ticket_data
+    base_file_number+=1
+    
+
 
 def extract_data(soup):
     """BeautifulSoup 객체에서 데이터를 추출하는 함수"""
@@ -175,7 +162,7 @@ def extract_data(soup):
         "title": None,
         "category": None,
         "location": None,
-        "region": None,
+    "region": None,
         "price": None,
         "start_date": None,
         "end_date": None,

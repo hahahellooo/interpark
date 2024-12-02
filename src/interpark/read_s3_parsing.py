@@ -36,7 +36,7 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 53327  # 시작 파일 번호
+    base_file_number = 53300  # 시작 파일 번호
     end_file_number = base_file_number + 5  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
@@ -67,7 +67,7 @@ def html_parsing():
 
             # 예매하기 페이지에서 1차 데이터 추출
             ticket_data = extract_data(soup)
-
+        
             # None 값이 남아있는 경우 base_file_number로 다시 추출
             if any(value is None for key, value in ticket_data.items() if key != "hosts"):
                 print("Some values are None. Checking base file.")
@@ -146,24 +146,16 @@ def html_parsing():
                         description = description.text.strip()
                         ticket_data['description'] = description
                     
-                    # 캐스팅 정보 추출
-                    #info_sections = base_soup.find_all('div', class_='info2')  # class="info2" 섹션 모두 찾기
-                    #for section in info_sections:
-                        # h4 태그가 "캐스팅"인지 확인
-                        #header = section.find('h4')
-                        #if header and "캐스팅" in header.text:
-                            # 하위의 class="data" 추출
-                            #casting_data = section.find('div', class_='data')
-                            #if casting_data:
-                            #    casting_text = casting_data.text.replace('\n', '').strip()
-                            #    print(casting_text)
                 except Exception as e:
                     print(f"Error while processing base file {base_file_number}: {e}")
-            
+        
+
             print(ticket_data)
             return ticket_data
-            # 파일 처리 후 다음 파일로 이동
-            base_file_number += 1
+        
+        base_file_number+=1
+
+        # 파일 처리 후 다음 파일로 이동
         else:
             print("처리할 파일이 없습니다.")
             base_file_number+=1
@@ -219,13 +211,6 @@ def extract_data(soup):
             ticket_data["rating"] = text.split("관람연령")[1].strip()
         elif "공연시간" in text:
             ticket_data["running_time"] = text.split("공연시간")[1].strip()
-
-    # 공연시간
-    #content = soup.find('div', class_='contentDetail')
-    #if content:
-    #    show_time = content.text.replace('\n', '').strip()
-    #    show_time = ' '.join(show_time.split())
-    #    ticket_data['show_time'] = show_time
 
     # 가격
     price_list = []
