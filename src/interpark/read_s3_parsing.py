@@ -45,7 +45,45 @@ def html_parsing():
                 try:
                     base_file_html = hook.read_key(f'interpark/{base_file_number}.html', bucket_name)
                     base_soup = BeautifulSoup(base_file_html, 'html.parser')
-                
+               
+                    # 제목 추출
+                    info_title = base_soup.find('div', class_='info')
+                    title = info_title.find('h3')
+                    title = title.text.strip()
+                    if title:
+                        if ticket_data['title'] is None:
+                            ticket_data['title'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title)
+
+                    # 공연기간 추출
+                    introduce = base_soup.find('div', class_='introduce')
+                    data = introduce.find('div', class_='data')
+                    if data and ticket_data['start_date'] == None:
+                        p = data.find('p').text.strip()
+                        lines = p.strip().split('\n')
+                        for line in lines:
+                            line = line.replace(" ","").strip()
+                            if "공연일시" in line or "일시" in line or "공연기간" in line or "공연일자" in line:
+                                date = line.split(":")[1].split("~")  # ':' 이후를 가져오고 '~' 기준으로 분리
+                                if len(data) ==1:
+                                    start_date_raw = date[0].strip()
+                                    end_date_raw = start_date_raw
+                                else:
+                                    start_date_raw = date[0].strip()
+                                    end_date_raw = date[1].strip()
+                                # 시작 날짜 처리 (2024년 12월 14일(토) -> 2024.12.14)
+                                start_date_match = re.search(r'(\d{4})년(\d{1,2})월(\d{1,2})일', start_date_raw)
+                                if start_date_match:
+                                    start_date = f"{start_date_match.group(1)}.{int(start_date_match.group(2)):02d}.{int(start_date_match.group(3)):02d}"
+                                    # 종료 날짜 처리 (12월 15일(일) -> 2024.12.15)
+                                    end_date_match = re.search(r'(\d{1,2})월(\d{1,2})일', end_date_raw)
+                                    if end_date_match:
+                                        # start_date에서 년도 추출
+                                        year_from_start = start_date_match.group(1)
+                                        # end_date에 년도 추가
+                                        end_date = f"{year_from_start}.{int(end_date_match.group(1)):02d}.{int(end_date_match.group(2)):02d}"
+                                    ticket_data['start_date'] = start_date
+                                    ticket_data['end_date'] = end_date
+
                     # 티켓오픈일, 선예매 추출
                     ticket_open_date = None
                     fanclub_preopen_date = None
@@ -68,7 +106,7 @@ def html_parsing():
                     # 링크 추출
                     book_link = base_soup.find('a', class_='btn_book')
                     if book_link and 'href' in book_link.attrs:
-                        ticket_data['hosts']['link'] = book_link['href']
+                        ticket_data['hosts']['ticket_url'] = book_link['href']
                 
                     # 설명 추출
                     desc = base_soup.find('div', class_='info1')
@@ -79,16 +117,16 @@ def html_parsing():
                         ticket_data['description'] = description
                     
                     # 캐스팅 정보 추출
-                    info_sections = base_soup.find_all('div', class_='info2')  # class="info2" 섹션 모두 찾기
-                    for section in info_sections:
+                    #info_sections = base_soup.find_all('div', class_='info2')  # class="info2" 섹션 모두 찾기
+                    #for section in info_sections:
                         # h4 태그가 "캐스팅"인지 확인
-                        header = section.find('h4')
-                        if header and "캐스팅" in header.text:
+                        #header = section.find('h4')
+                        #if header and "캐스팅" in header.text:
                             # 하위의 class="data" 추출
-                            casting_data = section.find('div', class_='data')
-                            if casting_data:
-                                casting_text = casting_data.text.replace('\n', '').strip()
-                                print(casting_text)
+                            #casting_data = section.find('div', class_='data')
+                            #if casting_data:
+                            #    casting_text = casting_data.text.replace('\n', '').strip()
+                            #    print(casting_text)
                 except Exception as e:
                     print(f"Error while processing base file {base_file_number}: {e}")
             
@@ -111,7 +149,6 @@ def extract_data(soup):
         "price": None,
         "start_date": None,
         "end_date": None,
-        "show_time": None,
         "running_time": None,
         "casting": None,
         "rating": None,
@@ -120,7 +157,7 @@ def extract_data(soup):
         "open_date": None,
         "pre_open_date": None,
         "artist": None,
-        "hosts": {"link": None, "site_id": 1}
+        "hosts": {"site_id": 1, "ticket_url": None}
     }
 
     # 공연 제목
@@ -154,11 +191,11 @@ def extract_data(soup):
             ticket_data["running_time"] = text.split("공연시간")[1].strip()
 
     # 공연시간
-    content = soup.find('div', class_='contentDetail')
-    if content:
-        show_time = content.text.replace('\n', '').strip()
-        show_time = ' '.join(show_time.split())
-        ticket_data['show_time'] = show_time
+    #content = soup.find('div', class_='contentDetail')
+    #if content:
+    #    show_time = content.text.replace('\n', '').strip()
+    #    show_time = ' '.join(show_time.split())
+    #    ticket_data['show_time'] = show_time
 
     # 가격
     price_list = []
@@ -172,14 +209,14 @@ def extract_data(soup):
     # 포스터 이미지 URL
     poster_url = soup.find('img', class_='posterBoxImage')
     if poster_url:
-        ticket_data["poster_url"] = poster_url['src']
+        ticket_data["poster_url"] = 'https:'+poster_url['src']
 
     # 캐스팅 정보
     role_list = []
     role_name = soup.find_all('div', class_='castingActor')
     for role in role_name:
         role = role.text.replace('\n', '').strip()
-        role_list.append({"role_name": role, "actor": None})
+        role_list.append({"role": role, "actor": None})
     actor_list = []
     actor_name = soup.find_all('div', class_='castingName')
     for actor in actor_name:
@@ -197,7 +234,7 @@ def extract_data(soup):
         if i < len(actor_list):
             img_tag = url.find('img', class_='castingImage')
             if img_tag and 'src' in img_tag.attrs:
-                artist_url = img_tag['src']
+                artist_url = 'https:'+img_tag['src']
                 artist_data.append({"artist_name": actor_list[i],
                                     "artist_url": artist_url})
     ticket_data['artist'] = artist_data
