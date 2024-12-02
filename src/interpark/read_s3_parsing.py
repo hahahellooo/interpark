@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from datetime import datetime
 from dateutil import parser
-from interpark.region import get_location
+from region import get_location
 
 def convert_to_datetime_format(date_str):
     # 예시: "2024년 11월 6일(수) 오후 2시"
@@ -200,8 +200,6 @@ def extract_data(soup):
         if "장소" in text:
             place = text.split("장소")[1].strip()
             ticket_data['location'] = place.split(' (자세히)')[0].replace('\n', '').strip()
-            # 지역 추출
-            ticket_data['region'] = get_location(ticket_data['location'])
         elif "공연기간" in text:
             date_range = text.split("공연기간")[1].strip()
             if "~" in date_range:
@@ -215,6 +213,9 @@ def extract_data(soup):
         elif "공연시간" in text:
             ticket_data["running_time"] = text.split("공연시간")[1].strip()
     
+    # 지역 추출
+    location = ticket_data['location']
+    ticket_data['region'] = get_location(location)
     
     # 가격 추출
     price_list = []

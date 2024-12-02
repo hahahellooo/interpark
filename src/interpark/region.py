@@ -81,6 +81,5 @@ def get_location(location):
     finally:
         driver.quit()  # 브라우저 종료
 
-# 함수 호출
-get_location()
+
 
