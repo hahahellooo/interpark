@@ -1,6 +1,6 @@
 [project]
 name = "interpark"
-version = "0.2.1"
+version = "0.2.3"
 description = "Default template for PDM package"
 authors = [
     {name = "hahahellooo", email = "hahahello777@gmail.com"},
@@ -17,3 +17,6 @@ license = {text = "MIT"}
 
 [tool.pdm]
 distribution = false
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
