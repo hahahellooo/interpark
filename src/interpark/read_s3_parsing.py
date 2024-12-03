@@ -80,8 +80,10 @@ def get_region(location):
                 return region
             else:
                 print("지역을 찾을 수 없습니다.")
+                
         else:
-            print("주소를 찾을 수 없습니다.")
+            print("주소를 찾을 수 없습니다. 재검색을 시도합니다.")
+            
 
     except Exception as e:
         print(f"접속 에러: {e}")
@@ -221,7 +223,7 @@ def html_parsing():
                     # 링크 추출
                     book_link = base_soup.find('a', class_='btn_book')
                     if book_link and 'href' in book_link.attrs:
-                        ticket_data['hosts']['ticket_url'] = book_link['href']
+                        ticket_data['hosts'][0]['ticket_url'] = book_link['href']
                 
                     # 설명 추출
                     desc = base_soup.find('div', class_='info1')
@@ -249,6 +251,7 @@ def extract_data(soup):
     """BeautifulSoup 객체에서 데이터를 추출하는 함수"""
     ticket_data = {
         "title": None,
+        "duplicatekey": None,
         "category": None,
         "location": None,
         "region": None,
@@ -263,13 +266,13 @@ def extract_data(soup):
         "open_date": None,
         "pre_open_date": None,
         "artist": None,
-        "hosts": {"site_id": 1, "ticket_url": None}
+        "hosts": [{"site_id": 1, "ticket_url": None}]
     }
 
     # 공연 제목
     title = soup.find('h2', class_='prdTitle')
     if title:
-        ticket_data['title'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title.text)
+        ticket_data['title'] = title.text.replace('\n','').strip()
 
     # 카테고리
     category = soup.find('div', class_='tagText')
@@ -296,9 +299,17 @@ def extract_data(soup):
         elif "공연시간" in text:
             ticket_data["running_time"] = text.split("공연시간")[1].strip()
     
+    # 중복 데이터 확인을 위한 키 추가 
+    ticket_data['duplicatekey'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title.text)+ticket_data['start_date']
+
     # 지역 추출
     location = ticket_data['location']
     ticket_data['region'] = get_region(location)
+    if ticket_data['region'] is None:
+        print("region 재검색중...")
+        location_part = location.rsplit(' ',1)
+        result = ' '.join(location_part[0][:2])
+        ticket_data['region'] = get_region(result)
     
     # 가격 추출
     price_list = []
