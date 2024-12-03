@@ -8,7 +8,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import time
 
-def get_location(location):
+def get_region(location):
     # 지역 맵
     region_map = {
         '서울': '서울',

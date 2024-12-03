@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from datetime import datetime
 from dateutil import parser
-from region import get_location
+from region import get_region
 
 def convert_to_datetime_format(date_str):
     # 예시: "2024년 11월 6일(수) 오후 2시"
@@ -215,7 +215,7 @@ def extract_data(soup):
     
     # 지역 추출
     location = ticket_data['location']
-    ticket_data['region'] = get_location(location)
+    ticket_data['region'] = get_region(location)
     
     # 가격 추출
     price_list = []
@@ -261,9 +261,7 @@ def extract_data(soup):
                 artist_data.append({"artist_name": actor_list[i],
                                     "artist_url": artist_url})
     ticket_data['artist'] = artist_data
-
     return ticket_data
 
 # 함수 실행
 html_parsing()
-
