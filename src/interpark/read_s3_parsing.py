@@ -122,7 +122,7 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 53310  # 시작 파일 번호
+    base_file_number = 53315  # 시작 파일 번호
     end_file_number = base_file_number + 5  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
@@ -237,15 +237,10 @@ def html_parsing():
         
 
             print(ticket_data)
-            return ticket_data
         
-            base_file_number+=1
+        base_file_number+=1
 
-        # 파일 처리 후 다음 파일로 이동
-        else:
-            print("처리할 파일이 없습니다.")
-            base_file_number+=1
-            continue
+    return  ticket_data
 
 def extract_data(soup):
     """BeautifulSoup 객체에서 데이터를 추출하는 함수"""
