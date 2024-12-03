@@ -28,16 +28,17 @@ def get_location(location):
         '대전': '충청',
         '강원': '강원',
     }
-
-    # ChromeOptions 객체 생성
+    
+    
     options = Options()
-    # Headless 모드 활성화
-    options.add_argument("--no-sandbox")  # 추가한 옵션
-    #options.add_argument("--headless")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.20 Safari/537.36");
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")  # headless 있으면 동작안됌
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")  # 추가한 옵션
+    options.add_argument("--disable-gpu")
     options.add_argument("--ignore-ssl-errors=yes")
     options.add_argument("--ignore-certificate-errors")
+    options.add_argument("--window-size=1920,1080")
 
     # WebDriver 객체 생성
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
