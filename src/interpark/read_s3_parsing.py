@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import re
 from datetime import datetime
 from dateutil import parser
-from region import get_region
 ###################################################################region 함수 추가
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
