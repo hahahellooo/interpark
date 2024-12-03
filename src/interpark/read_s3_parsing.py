@@ -1,3 +1,5 @@
+from kafka import KafkaProducer
+import json
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from bs4 import BeautifulSoup
 import re
@@ -236,11 +238,40 @@ def html_parsing():
                     print(f"Error while processing base file {base_file_number}: {e}")
         
 
-            print(ticket_data)
-        
+                producer = KafkaProducer(
+                bootstrap_servers = ['kafka1:9093','kafka2:9094', 'kafka3:9095'],
+                value_serializer=lambda x: json.dumps(x).encode('utf-8')
+                )
+                topic = 'interpark_data'
+                try:
+
+                    # ticket_data 형식에 맞게 메시지 작성
+                    message = {
+                    "title": data.get("title"),
+                    "duplicatekey": data.get("duplicatekey"),
+                    "category": data.get("category"),
+                    "location": data.get("location"),
+                    "region": data.get("region"),
+                    "price": data.get("price"),
+                    "start_date": data.get("start_date"),
+                    "end_date": data.get("end_date"),
+                    "running_time": data.get("running_time"),
+                    "casting": data.get("casting"),
+                    "rating": data.get("rating"),
+                    "description": data.get("description"),
+                    "poster_url": data.get("poster_url"),
+                    "open_date": data.get("open_date"),
+                    "pre_open_date": data.get("pre_open_date"),
+                    "artist": data.get("artist"),
+                    "hosts": data.get("hosts")
+                    }
+
+                    producer.send(topic, message)     
+                    
+                    print(message)
+                    print(f'{base_file_number} insert complete')
         base_file_number+=1
 
-    return  ticket_data
 
 def extract_data(soup):
     """BeautifulSoup 객체에서 데이터를 추출하는 함수"""
