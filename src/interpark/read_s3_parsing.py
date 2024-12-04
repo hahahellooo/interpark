@@ -351,12 +351,17 @@ def extract_data(soup):
     price_list = []
     price_elements = soup.find_all('li', class_='infoPriceItem')
     for price in price_elements:
-        price_text = price.text.strip().split()
+        #price_text = price.text.strip().split()
+        price_text = price.text.strip()
         if not any("자세히" in item for item in price_text):
-            if len(price_text) >= 2:
-                seat = price_text[:-1]
-                price = price_text[-1]
+             # 좌석과 가격을 분리 (숫자와 원 단위 뒤에 공백이 올 경우)
+            seat_price_pairs = re.findall(r'([가-힣]+(?:석|룸))\s*([\d,]+)\s*원', price_text)
+            for seat, price in seat_price_pairs:
                 price_list.append({"seat": seat, "price": price})
+            #if len(price_text) >= 2:
+            #    seat = price_text[:-1]
+            #    price = price_text[-1]
+            #    price_list.append({"seat": seat, "price": price})
     ticket_data["price"] = price_list
 
     # 포스터 이미지 URL
