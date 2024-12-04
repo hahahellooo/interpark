@@ -14,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import kafka
 
 def get_region(location):
     # 지역 맵
@@ -168,7 +169,7 @@ def html_parsing():
                     title = info_title.find('h3')
                     title = title.text.strip()
                     if title:
-                        if ticket_data['title'] is None:
+                        if ticket_data['title'] == None:
                             ticket_data['title'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title)
 
                     # 공연기간 추출
@@ -270,6 +271,8 @@ def html_parsing():
                     
                     print(message)
                     print(f'{base_file_number} insert complete')
+                except Exception as e:
+                    print(f"메세지오류")
         base_file_number+=1
 
 
@@ -384,4 +387,4 @@ def extract_data(soup):
     return ticket_data
 
 # 함수 실행
-html_parsing()
+#html_parsing()
