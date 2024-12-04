@@ -247,23 +247,23 @@ def html_parsing():
 
                         # ticket_data 형식에 맞게 메시지 작성
                         message = {
-                        "title": data.get("title"),
-                        "duplicatekey": data.get("duplicatekey"),
-                        "category": data.get("category"),
-                        "location": data.get("location"),
-                        "region": data.get("region"),
-                        "price": data.get("price"),
-                        "start_date": data.get("start_date"),
-                        "end_date": data.get("end_date"),
-                        "running_time": data.get("running_time"),
-                        "casting": data.get("casting"),
-                        "rating": data.get("rating"),
-                        "description": data.get("description"),
-                        "poster_url": data.get("poster_url"),
-                        "open_date": data.get("open_date"),
-                        "pre_open_date": data.get("pre_open_date"),
-                        "artist": data.get("artist"),
-                        "hosts": data.get("hosts")
+                        "title": ticket_data["title"],
+                        "duplicatekey":  ticket_data["duplicatekey"],
+                        "category":  ticket_data["category"],
+                        "location":  ticket_data["location"],
+                        "region":  ticket_data["region"],
+                        "price":  ticket_data["price"],
+                        "start_date":  ticket_data["start_date"],
+                        "end_date":  ticket_data["end_date"],
+                        "running_time":  ticket_data["running_time"],
+                        "casting":  ticket_data["casting"],
+                        "rating":  ticket_data["rating"],
+                        "description":  ticket_data["description"],
+                        "poster_url":  ticket_data["poster_url"],
+                        "open_date":  ticket_data["open_date"],
+                        "pre_open_date":  ticket_data["pre_open_date"],
+                        "artist":  ticket_data["artist"],
+                        "hosts":  ticket_data["hosts"]
                         }
 
                         producer.send(topic, message)     
