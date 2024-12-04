@@ -235,44 +235,47 @@ def html_parsing():
                         description = description.text.strip()
                         ticket_data['description'] = description
                     
-                except Exception as e:
-                    print(f"Error while processing base file {base_file_number}: {e}")
+                
         
 
-                producer = KafkaProducer(
-                bootstrap_servers = ['kafka1:9093','kafka2:9094', 'kafka3:9095'],
-                value_serializer=lambda x: json.dumps(x).encode('utf-8')
-                )
-                topic = 'interpark_data'
-                try:
+                    producer = KafkaProducer(
+                    bootstrap_servers = ['kafka1:9093','kafka2:9094', 'kafka3:9095'],
+                    value_serializer=lambda x: json.dumps(x).encode('utf-8')
+                    )
+                    topic = 'interpark_data'
+                    try:
 
-                    # ticket_data 형식에 맞게 메시지 작성
-                    message = {
-                    "title": data.get("title"),
-                    "duplicatekey": data.get("duplicatekey"),
-                    "category": data.get("category"),
-                    "location": data.get("location"),
-                    "region": data.get("region"),
-                    "price": data.get("price"),
-                    "start_date": data.get("start_date"),
-                    "end_date": data.get("end_date"),
-                    "running_time": data.get("running_time"),
-                    "casting": data.get("casting"),
-                    "rating": data.get("rating"),
-                    "description": data.get("description"),
-                    "poster_url": data.get("poster_url"),
-                    "open_date": data.get("open_date"),
-                    "pre_open_date": data.get("pre_open_date"),
-                    "artist": data.get("artist"),
-                    "hosts": data.get("hosts")
-                    }
+                        # ticket_data 형식에 맞게 메시지 작성
+                        message = {
+                        "title": data.get("title"),
+                        "duplicatekey": data.get("duplicatekey"),
+                        "category": data.get("category"),
+                        "location": data.get("location"),
+                        "region": data.get("region"),
+                        "price": data.get("price"),
+                        "start_date": data.get("start_date"),
+                        "end_date": data.get("end_date"),
+                        "running_time": data.get("running_time"),
+                        "casting": data.get("casting"),
+                        "rating": data.get("rating"),
+                        "description": data.get("description"),
+                        "poster_url": data.get("poster_url"),
+                        "open_date": data.get("open_date"),
+                        "pre_open_date": data.get("pre_open_date"),
+                        "artist": data.get("artist"),
+                        "hosts": data.get("hosts")
+                        }
 
-                    producer.send(topic, message)     
-                    
-                    print(message)
-                    print(f'{base_file_number} insert complete')
+                        producer.send(topic, message)     
+                        
+                        print(message)
+                        print(f'{base_file_number} insert complete')
+                    except Exception as e:
+                        print(f"message가 없습니다: {message}")
+                    producer.flush()
                 except Exception as e:
-                    print(f"메세지오류")
+                        print(f"{base_file_html}에 연결 실패")        
+
         base_file_number+=1
 
 
