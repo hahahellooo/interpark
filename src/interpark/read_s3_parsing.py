@@ -126,7 +126,7 @@ def html_parsing():
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
     base_file_number = 52800  # 시작 파일 번호
-    end_file_number = base_file_number + 100  # 끝 파일 번호 설정
+    end_file_number = base_file_number + 70  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
     while base_file_number <= end_file_number:
@@ -359,6 +359,12 @@ def extract_data(soup):
     poster_url = soup.find('img', class_='posterBoxImage')
     if poster_url:
         ticket_data["poster_url"] = 'https:'+poster_url['src']
+    ######### poster_url 404 에러인 경우 새로운 url 추가 #######
+    else:
+        src_url = soup.find('img', class_="poster bgConcert")
+        if src_url and 'src' in src_url.attrs:
+            poster_url_src = src_url['src']
+            ticket_data['poster_url'] = 'https:'+poster_url_src
 
     # 캐스팅 정보
     role_list = []
