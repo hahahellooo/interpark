@@ -57,7 +57,7 @@ def get_region(location):
         driver.get(link)
 
         # 페이지 로딩 기다리기 (예: 주소가 로딩될 때까지 기다림)
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "p[data-id='address']"))
         )
 
@@ -126,7 +126,7 @@ def html_parsing():
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
     base_file_number = 52800  # 시작 파일 번호
-    end_file_number = base_file_number + 150  # 끝 파일 번호 설정
+    end_file_number = base_file_number + 100  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
     while base_file_number <= end_file_number:
