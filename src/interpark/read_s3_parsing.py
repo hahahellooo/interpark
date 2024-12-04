@@ -125,7 +125,7 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 53500  # 시작 파일 번호
+    base_file_number = 53550  # 시작 파일 번호
     end_file_number = base_file_number + 50  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
@@ -354,7 +354,7 @@ def extract_data(soup):
         price_text = price.text.strip().split()
         if not any("자세히" in item for item in price_text):
             if len(price_text) >= 2:
-                seat = " ".join(price_text[:-1])
+                seat = price_text[:-1]
                 price = price_text[-1]
                 price_list.append({"seat": seat, "price": price})
     ticket_data["price"] = price_list
