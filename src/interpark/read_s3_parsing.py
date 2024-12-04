@@ -238,9 +238,9 @@ def html_parsing():
                     ######### poster_url 404 에러인 경우 새로운 url 추가 #######
                     if ticket_data['poster_url'] == None:
                         src_url = soup.find('img', class_="poster bgConcert")
-                            if src_url and 'src' in src_url.attrs:
-                                poster_url_src = src_url['src']
-                                ticket_data['poster_url'] = 'https:'+poster_url_src
+                        if src_url and 'src' in src_url.attrs:
+                            poster_url_src = src_url['src']
+                            ticket_data['poster_url'] = 'https:'+poster_url_src
         
                     producer = KafkaProducer(
                     bootstrap_servers = ['kafka1:9093','kafka2:9094', 'kafka3:9095'],
