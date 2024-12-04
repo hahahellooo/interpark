@@ -12,7 +12,7 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 53327  # 시작 파일 번호
+    base_file_number = 52535  # 시작 파일 번호
     end_file_number = base_file_number + 3  # 끝 파일 번호 설정
 
     # 파일 번호를 하나씩 증가시키면서 반복 처리
@@ -115,15 +115,28 @@ def html_parsing():
                             description = description.text
                             description = ' '.join(description.split())
                             ticket_data['description'] = description
-
+                        
+                        ############################################################ 가격 추출
+                        price_list = []
+                        price_elements = soup.find_all('li', class_='infoPriceItem')
+                        for price in price_elements:
+                            print(price)
+                            price_text = price.text.strip().split("석")
+                            print(price_text)
+                            if not any("자세히" in item for item in price_text):
+                                if len(price_text) >= 2:
+                                    seat = price_text[0]
+                                    price = price_text[-1]
+                                    price_list.append({"seat": seat, "price": price})
+                        ticket_data["price"] = price_list
                     except Exception as e:
                         print(f"Error while processing base file {base_file_number}: {e}")
 
             print(ticket_data)
         else:
             print("처리할 파일이 없습니다.")
-            base_file_number+=1
-            continue
+        base_file_number+=1
+        continue
 
 
 html_parsing()

@@ -354,7 +354,7 @@ def extract_data(soup):
         price_text = price.text.strip().split()
         if not any("자세히" in item for item in price_text):
             if len(price_text) >= 2:
-                seat = price_text[:len(price_text)]
+                seat = " ".join(price_text[:-1])
                 price = price_text[-1]
                 price_list.append({"seat": seat, "price": price})
     ticket_data["price"] = price_list
