@@ -145,7 +145,7 @@ def html_parsing():
             file_html = hook.read_key(found_base_file_number_, bucket_name)
             ################################################################# 테스트 코드 추가
             #file_html = file_html.decode('utf-8')
-            soup = BeautifulSoup(file_html, 'html.parser')
+producer            soup = BeautifulSoup(file_html, 'html.parser')
 
             # 카테고리 (뮤지컬 등)
             category = soup.find('div', class_='tagText')
@@ -273,6 +273,7 @@ def html_parsing():
                     except Exception as e:
                         print(f"message가 없습니다: {message}")
                     producer.flush()
+                    producer.close()
                 except Exception as e:
                         print(f"{base_file_html}에 연결 실패")        
 
@@ -362,6 +363,8 @@ def extract_data(soup):
         if ticket_data["poster_url"] == None:
             src_url = soup.find('img', class_="poster bgConcert")
             if src_url and 'src' in src_url.attrs:
+                print("*"*33)
+                print(src_url.attrs)
                 poster_url_src = src_url['src']
                 ticket_data['poster_url'] = 'https:'+poster_url_src
 
