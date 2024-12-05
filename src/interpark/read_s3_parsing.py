@@ -124,8 +124,8 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 49740  # 시작 파일 번호
-    end_file_number = base_file_number + 80  # 끝 파일 번호 설정
+    base_file_number = 49820  # 시작 파일 번호
+    end_file_number = base_file_number + 100  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
     while base_file_number <= end_file_number:
