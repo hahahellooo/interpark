@@ -143,6 +143,8 @@ def html_parsing():
         if found_base_file_number_:
             print(f"Processing {found_base_file_number_}")
             file_html = hook.read_key(found_base_file_number_, bucket_name)
+            ################################################################# 테스트 코드 추가
+            file_html = file_html.decode('utf-8')
             soup = BeautifulSoup(file_html, 'html.parser')
 
             # 카테고리 (뮤지컬 등)
@@ -162,6 +164,7 @@ def html_parsing():
                 print("Some values are None. Checking base file.")
                 try:
                     base_file_html = hook.read_key(f'interpark/{base_file_number}.html', bucket_name)
+                    base_file_html = base_file_html.decode('utf-8')
                     base_soup = BeautifulSoup(base_file_html, 'html.parser')
                
                     # 제목 추출
