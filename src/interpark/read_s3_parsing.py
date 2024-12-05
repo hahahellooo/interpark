@@ -51,11 +51,12 @@ def get_region(location):
 
     # WebDriver 객체 생성
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
+    driver.set_page_load_timeout(120)  # 페이지 로드 타임아웃 설정
+    driver.implicitly_wait(30)
     link = f'https://map.kakao.com/?q={location}'
     try:
         driver.get(link)
-
+        
         # 페이지 로딩 기다리기 (예: 주소가 로딩될 때까지 기다림)
         WebDriverWait(driver, 40).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "p[data-id='address']"))
