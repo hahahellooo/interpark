@@ -12,8 +12,8 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 52535  # 시작 파일 번호
-    end_file_number = base_file_number + 3  # 끝 파일 번호 설정
+    base_file_number = 53550  # 시작 파일 번호
+    end_file_number = base_file_number + 10 # 끝 파일 번호 설정
 
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
@@ -42,101 +42,68 @@ def html_parsing():
                     base_file_number += 1
                     continue
 
-                # 예매하기 페이지에서 1차 데이터 추출
-                #ticket_data = extract_data(soup)
-                ticket_data = {
-                    "title": None,
-                    "category": None,
-                    "location": None,
-                    "region": None,
-                    "price": None,
-                    "start_date": None,
-                    "end_date": None,
-                    "running_time": None,
-                    "casting": None,
-                    "rating": None,
-                    "description": None,
-                    "poster_url": None,
-                    "open_date": None,
-                    "pre_open_date": None,
-                    "artist": None,
-                    "hosts": {"site_id": 1, "ticket_url": None}
-                        }
+            ticket_data = {
+            "title": None,
+            "duplicatekey": None,
+            "category": None,
+            "location": None,
+            "region": None,
+            "price": None,
+            "start_date": None,
+            "end_date": None,
+            "running_time": None,
+            "casting": None,
+            "rating": None,
+            "description": None,
+            "poster_url": None,
+            "open_date": None,
+            "pre_open_date": None,
+            "artist": None,
+            "hosts": [{"site_id": 1, "ticket_url": None}]
+            }
 
-                # None 값이 남아있는 경우 base_file_number로 다시 추출
-                if any(value is None for key, value in ticket_data.items() if key != "hosts"):
-                    print("Some values are None. Checking base file.")
-                    try:
-                        base_file_html = hook.read_key(f'interpark/{base_file_number}.html', bucket_name)
-                        base_soup = BeautifulSoup(base_file_html, 'html.parser')
+            # 가격 추출
+            price_list = []
+            price_elements = soup.find_all('li', class_='infoPriceItem')
+            for price in price_elements:
+                price_text = price.text.strip().split()
+                #price_text = price.text.strip()
+                if not any("자세히" in item for item in price_text):
+                    print(price_text)
 
-                        # 제목 추출
-                        info_title = base_soup.find('div', class_='info')
-                        title = info_title.find('h3')
-                        title = title.text.strip()
-                        if title:
-                            if ticket_data['title'] is None:
-                                ticket_data['title'] = re.sub(r'\s+|[^\w가-힣0-9]', '', title)
+                 #좌석과 가격을 분리 (숫자와 원 단위 뒤에 공백이 올 경우)
+                    if len(price_text) >= 2:
+                        seat = price_text[:-1]
+                        price = price_text[-1]
+                        price_list.append({"seat": " ".join(seat), "price": price})
+                    elif len(price_text) == 1:
+                        price = None
+                        seat = []
+                        for i, item in enumerate(price_text):
+                            if '원' in item:
+                                # 가격을 '원'과 그 앞의 값까지 추출하여 price에 저장
+                                price = f"{price_text[i-1]} {item}"
+                                # 가격 앞의 좌석 정보
+                                seat_info = " ".join(price_text[i-3:i-1])
+                                # 가격과 좌석 정보를 딕셔너리로 추가
+                                price_list.append({"seat": seat_info, "price": price})
+            ticket_data["price"] = price_list
+################################################################
 
-                        # 공연기간 추출
-                        introduce = base_soup.find('div', class_='introduce')
-                        data = introduce.find('div', class_='data')
-                        if data and ticket_data['start_date'] == None:
-                            p = data.find('p').text.strip()
-                            lines = p.strip().split('\n')
-                            for line in lines:
-                                line = line.replace(" ","").strip()
-                                if "공연일시" in line or "일시" in line or "공연기간" in line or "공연일자" in line:
-                                    date = line.split(":")[1].split("~")  # ':' 이후를 가져오고 '~' 기준으로 분리
-                                    if len(data) ==1:
-                                        start_date_raw = date[0].strip()
-                                        end_date_raw = start_date_raw
-                                    else:
-                                        start_date_raw = date[0].strip()
-                                        end_date_raw = date[1].strip()
-                                    # 시작 날짜 처리 (2024년 12월 14일(토) -> 2024.12.14)
-                                    start_date_match = re.search(r'(\d{4})년(\d{1,2})월(\d{1,2})일', start_date_raw)
-                                    if start_date_match:
-                                        start_date = f"{start_date_match.group(1)}.{int(start_date_match.group(2)):02d}.{int(start_date_match.group(3)):02d}"
-                                        # 종료 날짜 처리 (12월 15일(일) -> 2024.12.15)
-                                        end_date_match = re.search(r'(\d{1,2})월(\d{1,2})일', end_date_raw)
-                                        if end_date_match:
-                                            # start_date에서 년도 추출
-                                            year_from_start = start_date_match.group(1)
-                                            # end_date에 년도 추가
-                                            end_date = f"{year_from_start}.{int(end_date_match.group(1)):02d}.{int(end_date_match.group(2)):02d}"
-                                        ticket_data['start_date'] = start_date
-                                        ticket_data['end_date'] = end_date
-
-                        # 설명 추출
-                        desc = base_soup.find('div', class_='info1')
-                        description = desc.find('div', class_='data')
-                        if description:
-                            description = description.text
-                            description = ' '.join(description.split())
-                            ticket_data['description'] = description
-                        
-                        ############################################################ 가격 추출
-                        price_list = []
-                        price_elements = soup.find_all('li', class_='infoPriceItem')
-                        for price in price_elements:
-                            print(price)
-                            price_text = price.text.strip().split("석")
-                            print(price_text)
-                            if not any("자세히" in item for item in price_text):
-                                if len(price_text) >= 2:
-                                    seat = price_text[0]
-                                    price = price_text[-1]
-                                    price_list.append({"seat": seat, "price": price})
-                        ticket_data["price"] = price_list
-                    except Exception as e:
-                        print(f"Error while processing base file {base_file_number}: {e}")
-
+            # 포스터 이미지 URL
+            poster_url = soup.find('img', class_='posterBoxImage')
+            if poster_url:
+                ticket_data["poster_url"] = 'https:'+poster_url['src']
+                if ticket_data["poster_url"] == None:
+                    src_url = soup.find('img', class_="poster bgConcert")
+                    if src_url and 'src' in src_url.attrs:
+                        poster_url_src = src_url['src']
+                        ticket_data['poster_url'] = 'https:'+poster_url_src
+            
             print(ticket_data)
-        else:
-            print("처리할 파일이 없습니다.")
+
         base_file_number+=1
-        continue
+
 
 
 html_parsing()

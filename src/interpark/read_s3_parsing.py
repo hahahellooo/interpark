@@ -125,8 +125,8 @@ def html_parsing():
 
     hook = S3Hook(aws_conn_id=aws_conn_id)
 
-    base_file_number = 53550  # 시작 파일 번호
-    end_file_number = base_file_number + 50  # 끝 파일 번호 설정
+    base_file_number = 49609  # 시작 파일 번호
+    end_file_number = base_file_number + 60  # 끝 파일 번호 설정
     # 파일 번호를 하나씩 증가시키면서 반복 처리
     #while True:###################################################테스트
     while base_file_number <= end_file_number:
@@ -234,13 +234,6 @@ def html_parsing():
                     if description:
                         description = description.text.strip()
                         ticket_data['description'] = description
-
-                    ######### poster_url 404 에러인 경우 새로운 url 추가 #######
-                    if ticket_data['poster_url'] == None:
-                        src_url = soup.find('img', class_="poster bgConcert")
-                        if src_url and 'src' in src_url.attrs:
-                            poster_url_src = src_url['src']
-                            ticket_data['poster_url'] = 'https:'+poster_url_src
         
                     producer = KafkaProducer(
                     bootstrap_servers = ['kafka1:9093','kafka2:9094', 'kafka3:9095'],
@@ -351,23 +344,23 @@ def extract_data(soup):
     price_list = []
     price_elements = soup.find_all('li', class_='infoPriceItem')
     for price in price_elements:
-        #price_text = price.text.strip().split()
-        price_text = price.text.strip()
+        price_text = price.text.strip().split()
         if not any("자세히" in item for item in price_text):
-             # 좌석과 가격을 분리 (숫자와 원 단위 뒤에 공백이 올 경우)
-            seat_price_pairs = re.findall(r'([가-힣]+(?:석|룸))\s*([\d,]+)\s*원', price_text)
-            for seat, price in seat_price_pairs:
-                price_list.append({"seat": seat, "price": price})
-            #if len(price_text) >= 2:
-            #    seat = price_text[:-1]
-            #    price = price_text[-1]
-            #    price_list.append({"seat": seat, "price": price})
+            if len(price_text) >= 2:
+                seat = price_text[:-1]
+                price = price_text[-1]
+                price_list.append({"seat": " ".join(seat), "price": price})
     ticket_data["price"] = price_list
 
     # 포스터 이미지 URL
     poster_url = soup.find('img', class_='posterBoxImage')
     if poster_url:
         ticket_data["poster_url"] = 'https:'+poster_url['src']
+        if ticket_data["poster_url"] == None:
+            src_url = soup.find('img', class_="poster bgConcert")
+            if src_url and 'src' in src_url.attrs:
+                poster_url_src = src_url['src']
+                ticket_data['poster_url'] = 'https:'+poster_url_src
 
     # 캐스팅 정보
     role_list = []
@@ -399,4 +392,4 @@ def extract_data(soup):
     return ticket_data
 
 # 함수 실행
-#html_parsing()
+html_parsing()
