@@ -142,8 +142,6 @@ def html_parsing():
         if found_base_file_number_:
             print(f"Processing {found_base_file_number_}")
             file_html = hook.read_key(found_base_file_number_, bucket_name)
-            ################################################################# 테스트 코드 추가
-            #file_html = file_html.decode('utf-8')
             soup = BeautifulSoup(file_html, 'html.parser')
 
             # 카테고리 (뮤지컬 등)
@@ -272,7 +270,6 @@ def html_parsing():
                     except Exception as e:
                         print(f"message가 없습니다: {message}")
                     producer.flush()
-                    #producer.close()
                 except Exception as e:
                         print(f"{base_file_html}에 연결 실패")        
 
@@ -397,4 +394,4 @@ def extract_data(soup):
     return ticket_data
 
 # 함수 실행
-html_parsing()
+#html_parsing()
