@@ -145,7 +145,7 @@ def html_parsing():
             file_html = hook.read_key(found_base_file_number_, bucket_name)
             ################################################################# 테스트 코드 추가
             #file_html = file_html.decode('utf-8')
-producer            soup = BeautifulSoup(file_html, 'html.parser')
+            soup = BeautifulSoup(file_html, 'html.parser')
 
             # 카테고리 (뮤지컬 등)
             category = soup.find('div', class_='tagText')
