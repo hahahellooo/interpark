@@ -1,6 +1,6 @@
 # interpark data crawling
 
-1. raw data(html) s3에 저장
+1. 인터파크 페이지의 raw data(html)를 s3에 저장
 2. s3에서 파일 읽어와 데이터 추출 후 mongoDB에 저장
 
 ## 최종 데이터
