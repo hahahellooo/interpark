@@ -26,7 +26,7 @@ try:
     driver.switch_to.frame(iframe)
 
     # 페이지 반복 (예: 1~200페이지)
-    for page in range(1, ):  # 페이지 수는 실제 범위에 맞게 설정
+    for page in range(1, 5):  # 페이지 수는 실제 범위에 맞게 설정
         print(f"현재 페이지: {page}")
 
         # tbody 접근
@@ -44,14 +44,11 @@ try:
                 subject_text = subject.find_element(By.TAG_NAME, "a").text
                 subject_link = subject.find_element(By.TAG_NAME, "a").get_attribute("href")
 
-                # 날짜(date) 추출
-                open_date = row.find_element(By.CLASS_NAME, "date").text
 
                 # 데이터 출력
                 print(f"카테고리: {category}")
                 print(f"제목: {subject_text}")
                 print(f"URL: {subject_link}")
-                print(f"날짜: {open_date}")
                 print("-" * 50)
 
             except Exception as inner_e:

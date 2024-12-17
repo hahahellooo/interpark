@@ -22,7 +22,10 @@ num = base_num  # 초기값 설정
 
 while num < base_num + 2:  # 종료 조건: 3페이지만 처리
     try:
-        driver.get(url=f'https://ticket.interpark.com/webzine/paper/TPNoticeView.asp?bbsno=34&pageno=233&stext=&no={num}&groupno={num}&seq=0&KindOfGoods=TICKET&Genre=&sort=WriteDate') 
+        url=f'https://ticket.interpark.com/webzine/paper/TPNoticeView.asp?bbsno=34&pageno=233&stext=&no={num}&groupno={num}&seq=0&KindOfGoods=TICKET&Genre=&sort=WriteDate'
+        driver.get(url) 
+
+        print(url)
 
         # 페이지 로드 대기
         WebDriverWait(driver, 10).until(
