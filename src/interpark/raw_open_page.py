@@ -27,7 +27,7 @@ def extract_open_html():
 
     # 크롤링 대상 URL
     #open_page_lists = get_open_page_url(49609,100)
-    open_page_lists = get_open_page_url(53532,1000)
+    open_page_lists = get_open_page_url(53532,10)
     
     num = ''
     crawling_list=[]
@@ -62,9 +62,10 @@ def extract_open_html():
     finally:
           driver.quit()
 
+    print(crawling_list)
     return crawling_list
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # 함수 실행
-    extract_open_html()
+#    extract_open_html()
 
